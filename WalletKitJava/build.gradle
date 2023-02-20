@@ -1,0 +1,65 @@
+buildscript {
+    ext.androidConfig = [
+        'compileSdkVersion':        30,
+        'minSdkVersion':            23,
+        'targetSdkVersion':         28,
+    ]
+    ext.versions = [
+        'androidxAppcompat':        '1.3.1',
+        'androidxAnnotation':       '1.2.0',
+        'androidxConstraintLayout': '1.1.3',
+        'androidxRecyclerView':     '1.2.1',
+        'androidxTestRunner':       '1.4.0',
+        'androidxTestEspresso':     '3.4.0',
+        'coroutines':               '1.4.2',
+        'guava':                    '28.1',
+        'okhttp':                   '4.9.1',
+        'jackson':                  '2.10.1',
+        'jna':                      '5.4.0',
+        'junit':                    '4.12',
+        'cmake':                    '3.10.2',        // See .../WalletKitCore/CMakeLists.txt
+        'desugar':                  '1.1.5',
+        'bouncycastle':             '1.68'
+    ]
+    ext.deps = [
+        'androidxAppcompat':        "androidx.appcompat:appcompat:${versions.androidxAppcompat}",
+        'androidxAnnotation':       "androidx.annotation:annotation:${versions.androidxAnnotation}",
+        'androidxConstraintLayout': "androidx.constraintlayout:constraintlayout:${versions.androidxConstraintLayout}",
+        'androidxRecyclerView':     "androidx.recyclerview:recyclerview:${versions.androidxRecyclerView}",
+        'androidxTestRunner':       "androidx.test:runner:${versions.androidxTestRunner}",
+        'androidxTestEspresso':     "androidx.test.espresso:espresso-core:${versions.androidxTestEspresso}",
+        'coroutinesCore':           "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}",
+        'guavaAndroid':             "com.google.guava:guava:${versions.guava}-android",
+        'guavaJre':                 "com.google.guava:guava:${versions.guava}-jre",
+        'okhttp':                   "com.squareup.okhttp3:okhttp:${versions.okhttp}",
+        'jacksonCore':              "com.fasterxml.jackson.core:jackson-core:${versions.jackson}",
+        'jacksonAnnotations':       "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
+        'jacksonDatabind':          "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
+        'jacksonDatabindGuava':     "com.fasterxml.jackson.datatype:jackson-datatype-guava:${versions.jackson}",
+        'jnaAndroid':               "net.java.dev.jna:jna:${versions.jna}@aar",
+        'jnaJre':                   "net.java.dev.jna:jna:${versions.jna}",
+        'junit':                    "junit:junit:${versions.junit}",
+        'desugar':                  "com.android.tools:desugar_jdk_libs:${versions.desugar}",
+        'bouncyCastle':             "org.bouncycastle:bcprov-jdk15to18:${versions.bouncycastle}",
+    ]
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath 'digital.wup:android-maven-publish:3.6.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

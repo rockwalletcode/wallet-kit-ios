@@ -1,0 +1,15 @@
+include ':WalletKit'
+include ':WalletKitNative'
+include ':WalletKitBRD'
+
+// Android
+include ':WalletKitNative-Android'
+include ':WalletKitBRD-Android'
+include ':WalletKitDemo-Android'
+
+// JRE
+include ':WalletKitNative-JRE'
+include ':WalletKitBRD-JRE'
+
+// Kotlin
+include ':WalletKit-KTX'

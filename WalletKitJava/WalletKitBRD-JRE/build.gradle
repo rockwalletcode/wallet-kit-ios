@@ -1,0 +1,32 @@
+apply plugin: 'java-library'
+apply from: '../gradle/publish.gradle'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+sourceSets {
+    main {
+        java {
+            srcDirs = [project(':WalletKitBRD').javaMainSrcDir]
+        }
+    }
+    test {
+        java {
+            srcDirs += [project(':WalletKitBRD').javaTestSrcDir]
+        }
+    }
+}
+
+dependencies {
+    api project(':WalletKit')
+    api deps.guavaJre
+
+    implementation project(':WalletKitNative-JRE')
+    implementation deps.androidxAnnotation
+    implementation deps.jacksonAnnotations
+    implementation deps.jacksonCore
+    implementation deps.jacksonDatabind
+    implementation deps.jacksonDatabindGuava
+
+    testImplementation deps.junit
+}

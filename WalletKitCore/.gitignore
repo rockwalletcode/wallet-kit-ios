@@ -1,0 +1,6 @@
+cmake/
+build/
+
+# Test targets
+/test
+/btc-test
