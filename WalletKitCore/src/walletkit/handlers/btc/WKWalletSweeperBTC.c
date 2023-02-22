@@ -116,6 +116,8 @@ wkWalletSweeperTransactionForSweepAsBTC (WKWalletManager manager,
     //            context to the caller.
     BRBitcoinTransaction *transaction = NULL;
     btcWalletSweeperCreateTransaction (sweeper, wallet, feePerKb, &transaction);
+    
+    pthread_mutex_unlock (&manager->lock);
 
     return transaction;
 }
