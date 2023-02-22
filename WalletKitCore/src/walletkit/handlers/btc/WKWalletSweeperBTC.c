@@ -184,7 +184,7 @@ wkWalletSweeperValidateBTC (WKWalletSweeper sweeper) {
     }
 
     if (0 == btcWalletSweeperGetBalance (sweeperBTC)) {
-        return WK_WALLET_SWEEPER_INSUFFICIENT_FUNDS;
+        return WK_WALLET_SWEEPER_NO_TRANSFERS_FOUND;
     }
 
     return WK_WALLET_SWEEPER_SUCCESS;
