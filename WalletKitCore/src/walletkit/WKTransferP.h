@@ -228,7 +228,7 @@ wkTransferAttributeArrayRelease (BRArrayOf(WKTransferAttribute) attributes);
 static inline void
 wkTransferGenerateEvent (WKTransfer transfer,
                              WKTransferEvent event) {
-    if (NULL == transfer->listener.listener) return;
+    if (NULL == transfer || NULL == transfer->listener.listener) return;
     wkListenerGenerateTransferEvent(&transfer->listener, transfer, event);
 }
 
