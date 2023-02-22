@@ -929,38 +929,6 @@ public final class WalletConnector {
         }
     }
 
-    
-    ///
-    /// Send a transaction to the connector's network
-    ///
-    /// This function is the 'submit' part of the ETH JSON-RPC `eth_sendTransaction` and
-    /// `eth_sendRawTransaction`.
-    ///
-    /// - Parameter The `transaction` to submit
-    ///
-    /// - Returns: On success, a submitted transaction which may be distinct from the provided
-    ///   transaction argument.  On failure, a WalletConnectError of:
-    ///     .unknownEntity - `transaction` is not from `self`
-    ///     .unsignedTransaction - `transaaction` is not signed
-    ///     .submitFailed - the `transaction` was not submitted
-    ///
-    public func submit (transaction: Transaction,
-                        completion: @escaping (Result<Transaction, WalletConnectorError>) -> Void) {
-        guard core == transaction.core else { return completion (Result.failure(.unknownEntity)) }
-        guard transaction.isSigned     else { return completion (Result.failure(.unsignedTransaction)) }
-
-        manager.client.createTransaction (blockchainId: manager.network.uids,
-                                          transaction: transaction.serialization.data,
-                                          identifier: "WalletConnect: \(manager.network.uids): \(transaction.serialization.data.prefix(through: 10).base64EncodedString())") {
-            (res: Result<SystemClient.TransactionIdentifier, SystemClientError>) in
-
-            res.resolve(
-                success: { (ti) in completion (Result.success (transaction)) },
-                failure: { ( e) in completion (Result.failure (.submitFailed)) }
-            )
-        }
-    }
-
     ///
     ///  A Key that may be used for signing if it contains a secret
     ///

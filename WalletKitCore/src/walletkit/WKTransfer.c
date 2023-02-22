@@ -360,6 +360,12 @@ wkTransferGetAmountAsSign (WKTransfer transfer, WKBoolean isNegative) {
                                                                  wkAmountGetValue(transfer->amount));
 }
 
+extern const char *
+wkTransferGetExchangeId (WKTransfer transfer) {
+    return transfer->exchangeId;
+}
+
+
 extern WKAmount
 wkTransferGetAmount (WKTransfer transfer) {
     return wkAmountTake (transfer->amount);
@@ -825,6 +831,11 @@ extern void
 wkTransferAttributeSetValue (WKTransferAttribute attribute, const char *value) {
     if (NULL != attribute->value) free (attribute->value);
     attribute->value = (NULL == value ? NULL : strdup (value));
+}
+
+extern void
+wkTransferSetExchangeId (WKTransfer transfer, const char *exchangeId) {
+    transfer->exchangeId = strdup (exchangeId);
 }
 
 extern WKBoolean
