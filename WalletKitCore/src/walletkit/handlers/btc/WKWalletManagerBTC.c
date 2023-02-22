@@ -151,6 +151,49 @@ wkWalletManagerEstimateLimitBTC (WKWalletManager cwm,
 
     if (amountInSAT + fee > balance)
         amountInSAT = 0;
+    
+    uint64_t sizeInByte = (fee * 1000) / feePerKB;
+    uint64_t feeMinimum = 10 * sizeInByte; // 10 satoshi per byte minimum
+
+    if(fee < feeMinimum) {
+        fee = feeMinimum;
+    }
+
+    return WK_FALSE == asMaximum
+                    ? wkAmountCreateInteger ((int64_t) amountInSAT, unit)
+                    : wkAmountCreateInteger ((int64_t) (balance - fee), unit);
+}
+
+static WKAmount
+wkWalletManagerEstimateLimitBSV (WKWalletManager cwm,
+                                            WKWallet  wallet,
+                                            WKBoolean asMaximum,
+                                            WKAddress target,
+                                            WKNetworkFee networkFee,
+                                            WKBoolean *needEstimate,
+                                            WKBoolean *isZeroIfInsuffientFunds,
+                                            WKUnit unit) {
+    BRBitcoinWallet *btcWallet = wkWalletAsBTC (wallet);
+
+    // Amount may be zero if insufficient fees
+    *isZeroIfInsuffientFunds = WK_TRUE;
+
+    // NOTE: We know BTC/BCH has a minimum balance of zero.
+
+    uint64_t balance     = btcWalletBalance (btcWallet);
+    uint64_t feePerKB    = 1000 * wkNetworkFeeAsBTC (networkFee);
+    uint64_t amountInSAT = (WK_FALSE == asMaximum
+                            ? btcWalletMinOutputAmountWithFeePerKb (btcWallet, feePerKB)
+                            : btcWalletMaxOutputAmountWithFeePerKb (btcWallet, feePerKB));
+    uint64_t fee         = (amountInSAT > 0
+                            ? btcWalletFeeForTxAmountWithFeePerKb (btcWallet, feePerKB, amountInSAT)
+                            : 0);
+
+    //            if (WK_TRUE == asMaximum)
+    //                assert (balance == amountInSAT + fee);
+
+    if (amountInSAT + fee > balance)
+        amountInSAT = 0;
 
     return wkAmountCreateInteger ((int64_t) amountInSAT, unit);
 }
@@ -727,7 +770,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersBCH = {
     wkWalletManagerCreateWalletBTC,
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
-    wkWalletManagerEstimateLimitBTC,
+    wkWalletManagerEstimateLimitBSV,
     wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
@@ -747,7 +790,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersBSV = {
     wkWalletManagerCreateWalletBTC,
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
-    wkWalletManagerEstimateLimitBTC,
+    wkWalletManagerEstimateLimitBSV,
     wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
@@ -767,7 +810,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersLTC = {
     wkWalletManagerCreateWalletBTC,
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
-    wkWalletManagerEstimateLimitBTC,
+    wkWalletManagerEstimateLimitBSV,
     wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
@@ -787,7 +830,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersDOGE = {
     wkWalletManagerCreateWalletBTC,
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
-    wkWalletManagerEstimateLimitBTC,
+    wkWalletManagerEstimateLimitBSV,
     wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
