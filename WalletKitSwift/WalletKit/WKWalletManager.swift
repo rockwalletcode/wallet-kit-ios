@@ -357,7 +357,7 @@ public final class WalletSweeper {
         }
 
         switch wkNetworkGetType (wallet.manager.network.core) {
-        case WK_NETWORK_TYPE_BTC, WK_NETWORK_TYPE_BCH:
+        case WK_NETWORK_TYPE_BTC, WK_NETWORK_TYPE_BCH, WK_NETWORK_TYPE_BSV:
             // handle as BTC, creating the underlying WKWalletSweeper and initializing it
             // using the BlockchainDB
             createAsBtc(wallet: wallet,
