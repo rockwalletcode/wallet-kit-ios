@@ -1505,23 +1505,23 @@ extension System {
 
         return wkClientErrorCreateSubmission (submitErrorType, details)
     }
-
+    
     internal static func makeClientErrorCore (_ error: SystemClientError) -> WKClientError {
         switch error {
-        case .badRequest(let details):
-            return wkClientErrorCreate (WK_CLIENT_ERROR_BAD_REQUEST, details)
-        case .permission:
-            return wkClientErrorCreate (WK_CLIENT_ERROR_PERMISSION, nil)
-        case .resource:
-            return wkClientErrorCreate (WK_CLIENT_ERROR_RESOURCE, nil)
-        case .badResponse(let details):
-            return wkClientErrorCreate (WK_CLIENT_ERROR_BAD_RESPONSE, details)
-        case let .submission(error, details):
-            return System.makeClientSubmitErrorCore (error, details: details)
-        case .unavailable:
-            return wkClientErrorCreate (WK_CLIENT_ERROR_UNAVAILABLE, nil)
-        case .lostConnectivity:
-            return wkClientErrorCreate(WK_CLIENT_ERROR_LOST_CONNECTIVITY, nil)
+        case .url(let details):
+            return wkClientErrorCreate (WK_CLIENT_ERROR_URL, details)
+        case .submission(let error):
+            return wkClientErrorCreate (WK_CLIENT_ERROR_SUBMISSION, error.localizedDescription)
+        case .response(let status, _, _):
+            return wkClientErrorCreate (WK_CLIENT_ERROR_RESPONSE, String(status))
+        case .noData:
+            return wkClientErrorCreate (WK_CLIENT_ERROR_NO_DATA, nil)
+        case .jsonParse(let error):
+            return wkClientErrorCreate (WK_CLIENT_ERROR_JSON_PARSE, error?.localizedDescription)
+        case .model(let details):
+            return wkClientErrorCreate (WK_CLIENT_ERROR_MODEL, details)
+        case .noEntity(let details):
+            return wkClientErrorCreate(WK_CLIENT_ERROR_NO_ENTITY, details)
         }
     }
 
@@ -1679,7 +1679,7 @@ extension System {
                             wkClientAnnounceTransfersFailure (cwm, sid, System.makeClientErrorCore (e)) })
                 }},
 
-            funcSubmitTransaction: { (context, cwm, sid, identifier, transactionBytes, transactionBytesLength) in
+            funcSubmitTransaction: { (context, cwm, sid, identifier, exchangeId, transactionBytes, transactionBytesLength) in
                 precondition (nil != context  && nil != cwm)
 
                 guard let (_, manager) = System.systemExtract (context, cwm)
@@ -1687,10 +1687,13 @@ extension System {
                 print ("SYS: SubmitTransaction")
 
                 let data = Data (bytes: transactionBytes!, count: transactionBytesLength)
+                
+                let exchangeIdString = exchangeId.map { asUTF8String($0) }
 
                 manager.client.createTransaction (blockchainId: manager.network.uids,
                                                   transaction: data,
-                                                  identifier: identifier.map { asUTF8String($0) }) {
+                                                  identifier: identifier.map { asUTF8String($0) },
+                                                  exchangeId: exchangeIdString) {
                     (res: Result<SystemClient.TransactionIdentifier, SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(
