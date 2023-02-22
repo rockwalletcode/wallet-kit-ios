@@ -173,6 +173,36 @@ wkWalletManagerEstimateFeeBasisBTC (WKWalletManager cwm,
 
     // No margin needed.
     uint64_t btcFee = (0 == btcAmount ? 0 : btcWalletFeeForTxAmountWithFeePerKb (btcWallet, btcFeePerKB, btcAmount));
+    
+    uint64_t sizeInByte = (btcFee * 1000) / btcFeePerKB;
+    uint64_t feeMinimum = 10 * sizeInByte; // 10 satoshi per byte minimum
+    
+    if(btcFee < feeMinimum) {
+        btcFee = feeMinimum;
+        btcFeePerKB = 10000;
+    }
+
+    return wkFeeBasisCreateAsBTC (wallet->unitForFee, btcFee, btcFeePerKB, WK_FEE_BASIS_BTC_SIZE_UNKNOWN);
+}
+
+static WKFeeBasis
+wkWalletManagerEstimateFeeBasisBSV (WKWalletManager cwm,
+                                        WKWallet wallet,
+                                        WKCookie cookie,
+                                        WKAddress target,
+                                        WKAmount amount,
+                                        WKNetworkFee networkFee,
+                                        size_t attributesCount,
+                                        OwnershipKept WKTransferAttribute *attributes) {
+    BRBitcoinWallet *btcWallet = wkWalletAsBTC(wallet);
+
+    WKBoolean overflow = WK_FALSE;
+    uint64_t btcFeePerKB = 1000 * wkNetworkFeeAsBTC (networkFee);
+    uint64_t btcAmount   = wkAmountGetIntegerRaw (amount, &overflow);
+    assert(WK_FALSE == overflow);
+
+    // No margin needed.
+    uint64_t btcFee = (0 == btcAmount ? 0 : btcWalletFeeForTxAmountWithFeePerKb (btcWallet, btcFeePerKB, btcAmount));
 
     return wkFeeBasisCreateAsBTC (wallet->unitForFee, btcFee, btcFeePerKB, WK_FEE_BASIS_BTC_SIZE_UNKNOWN);
 }
@@ -698,7 +728,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersBCH = {
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
     wkWalletManagerEstimateLimitBTC,
-    wkWalletManagerEstimateFeeBasisBTC,
+    wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
     wkWalletManagerRecoverTransfersFromTransactionBundleBTC,
@@ -718,7 +748,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersBSV = {
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
     wkWalletManagerEstimateLimitBTC,
-    wkWalletManagerEstimateFeeBasisBTC,
+    wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
     wkWalletManagerRecoverTransfersFromTransactionBundleBTC,
@@ -738,7 +768,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersLTC = {
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
     wkWalletManagerEstimateLimitBTC,
-    wkWalletManagerEstimateFeeBasisBTC,
+    wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
     wkWalletManagerRecoverTransfersFromTransactionBundleBTC,
@@ -758,7 +788,7 @@ WKWalletManagerHandlers wkWalletManagerHandlersDOGE = {
     wkWalletManagerSignTransactionWithSeedBTC,
     wkWalletManagerSignTransactionWithKeyBTC,
     wkWalletManagerEstimateLimitBTC,
-    wkWalletManagerEstimateFeeBasisBTC,
+    wkWalletManagerEstimateFeeBasisBSV,
     wkWalletManagerSaveTransactionBundleBTC,
     NULL, // WKWalletManagerSaveTransactionBundleHandler
     wkWalletManagerRecoverTransfersFromTransactionBundleBTC,
