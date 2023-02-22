@@ -93,6 +93,35 @@ wkWalletSweeperEstimateFeeBasisForWalletSweepBTC (WKWalletManager cwm,
     
     uint64_t feePerKb = 1000 * wkNetworkFeeAsBTC (networkFee);
     
+    if (feePerKb < 10000) {
+        feePerKb = 10000; // 10 satoshi per byte minimum
+    }
+    
+    // TODO(fix): We should move this, along with BRWalletManagerEstimateFeeForTransfer, to
+    //            a model where they return a status code. We are currently providing no
+    //            context to the caller.
+    uint64_t fee = 0;
+    btcWalletSweeperEstimateFee (sweeperBTC, wid, feePerKb, &fee);
+    
+    return wkFeeBasisCreateAsBTC (wallet->unitForFee, fee, feePerKb, WK_FEE_BASIS_BTC_SIZE_UNKNOWN);
+}
+
+private_extern WKFeeBasis
+wkWalletSweeperEstimateFeeBasisForWalletSweepBSV (WKWalletManager cwm,
+                                                      WKWallet wallet,
+                                                      WKCookie cookie,
+                                                      WKWalletSweeper sweeper,
+                                                      WKNetworkFee networkFee) {
+    BRBitcoinWallet *wid = wkWalletAsBTC (wallet);
+    
+    WKWalletSweeperBTC sweeperBTC = wkWalletSweeperCoerce (sweeper);
+    
+    uint64_t feePerKb = 1000 * wkNetworkFeeAsBTC (networkFee);
+    
+    if (feePerKb < 2000) {
+        feePerKb = 2000; // 2 satoshi per byte minimum
+    }
+    
     // TODO(fix): We should move this, along with BRWalletManagerEstimateFeeForTransfer, to
     //            a model where they return a status code. We are currently providing no
     //            context to the caller.
@@ -410,7 +439,7 @@ WKWalletSweeperHandlers wkWalletSweeperHandlersBCH = {
     wkWalletSweeperGetAddressBTC,
     wkWalletSweeperGetBalanceBTC,
     wkWalletSweeperAddTransactionFromBundleBTC,
-    wkWalletSweeperEstimateFeeBasisForWalletSweepBTC,
+    wkWalletSweeperEstimateFeeBasisForWalletSweepBSV,
     wkWalletSweeperCreateTransferForWalletSweepBTC,
     wkWalletSweeperValidateBTC
 };
@@ -420,7 +449,7 @@ WKWalletSweeperHandlers wkWalletSweeperHandlersBSV = {
     wkWalletSweeperGetAddressBTC,
     wkWalletSweeperGetBalanceBTC,
     wkWalletSweeperAddTransactionFromBundleBTC,
-    wkWalletSweeperEstimateFeeBasisForWalletSweepBTC,
+    wkWalletSweeperEstimateFeeBasisForWalletSweepBSV,
     wkWalletSweeperCreateTransferForWalletSweepBTC,
     wkWalletSweeperValidateBTC
 };
@@ -430,7 +459,7 @@ WKWalletSweeperHandlers wkWalletSweeperHandlersLTC = {
     wkWalletSweeperGetAddressBTC,
     wkWalletSweeperGetBalanceBTC,
     wkWalletSweeperAddTransactionFromBundleBTC,
-    wkWalletSweeperEstimateFeeBasisForWalletSweepBTC,
+    wkWalletSweeperEstimateFeeBasisForWalletSweepBSV,
     wkWalletSweeperCreateTransferForWalletSweepBTC,
     wkWalletSweeperValidateBTC
 };
@@ -440,7 +469,7 @@ WKWalletSweeperHandlers wkWalletSweeperHandlersDOGE = {
     wkWalletSweeperGetAddressBTC,
     wkWalletSweeperGetBalanceBTC,
     wkWalletSweeperAddTransactionFromBundleBTC,
-    wkWalletSweeperEstimateFeeBasisForWalletSweepBTC,
+    wkWalletSweeperEstimateFeeBasisForWalletSweepBSV,
     wkWalletSweeperCreateTransferForWalletSweepBTC,
     wkWalletSweeperValidateBTC
 };
