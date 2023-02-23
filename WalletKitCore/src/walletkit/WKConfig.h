@@ -177,7 +177,7 @@ DEFINE_HANDLERS (WK_NETWORK_TYPE_DOGE, DOGE)
 // MARK: - ETH
 
 #define NETWORK_NAME    "Ethereum"
-DEFINE_NETWORK (WK_NETWORK_TYPE_ETH,  "ethereum-mainnet", NETWORK_NAME, "mainnet", true, 11779945, 6, 15)
+DEFINE_NETWORK (WK_NETWORK_TYPE_ETH,  "ethereum-mainnet", NETWORK_NAME, "mainnet", true, 11779945, 6, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("ethereum-mainnet", "25000000000", "1m", 1 * 60 * 1000)
 DEFINE_CURRENCY ("ethereum-mainnet",     "ethereum-mainnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_ETH,  "native",   NULL,   true)
     DEFINE_UNIT ("ethereum-mainnet:__native__",      "Wei",         "wei",      0,      "WEI")
@@ -190,7 +190,7 @@ DEFINE_ADDRESS_SCHEMES  ("ethereum-mainnet", WK_ADDRESS_SCHEME_NATIVE)
 DEFINE_MODES            ("ethereum-mainnet", WK_SYNC_MODE_API_ONLY)
 
 #if HAS_ETH_TESTNET
-DEFINE_NETWORK (WK_NETWORK_TYPE_ETH,  "ethereum-ropsten", NETWORK_NAME, "testnet", false, 9588166, 6, 15)
+DEFINE_NETWORK (WK_NETWORK_TYPE_ETH,  "ethereum-ropsten", NETWORK_NAME, "testnet", false, 9588166, 6, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("ethereum-ropsten", "17500000000", "1m", 1 * 60 * 1000)
 DEFINE_CURRENCY ("ethereum-ropsten",     "ethereum-ropsten:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_ETH,  "native",   NULL,   true)
     DEFINE_UNIT ("ethereum-ropsten:__native__",      "Wei",         "wei",      0,      "WEI")
@@ -211,7 +211,7 @@ DEFINE_HANDLERS (WK_NETWORK_TYPE_ETH, ETH)
 // MARK: XRP
 
 #define NETWORK_NAME    "Ripple"
-DEFINE_NETWORK (WK_NETWORK_TYPE_XRP,  "ripple-mainnet", NETWORK_NAME, "mainnet", true, 61321875, 1, 5)
+DEFINE_NETWORK (WK_NETWORK_TYPE_XRP,  "ripple-mainnet", NETWORK_NAME, "mainnet", true, 61321875, 1, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("ripple-mainnet", "10", "1m", 1 * 60 * 1000)
 DEFINE_CURRENCY ("ripple-mainnet",     "ripple-mainnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_XRP,  "native",   NULL,   true)
     DEFINE_UNIT ("ripple-mainnet:__native__",      "Drop",       "drop",      0,      "DROP")
@@ -220,7 +220,7 @@ DEFINE_ADDRESS_SCHEMES  ("ripple-mainnet", WK_ADDRESS_SCHEME_NATIVE)
 DEFINE_MODES            ("ripple-mainnet", WK_SYNC_MODE_API_ONLY)
 
 #if HAS_XRP_TESTNET
-DEFINE_NETWORK (WK_NETWORK_TYPE_XRP,  "ripple-testnet", NETWORK_NAME, "testnet", false, 50000, 1, 5)
+DEFINE_NETWORK (WK_NETWORK_TYPE_XRP,  "ripple-testnet", NETWORK_NAME, "testnet", false, 50000, 1, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("ripple-testnet", "10", "1m", 1 * 60 * 1000)
 DEFINE_CURRENCY ("ripple-testnet",     "ripple-testnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_XRP,  "native",   NULL,   true)
     DEFINE_UNIT ("ripple-testnet:__native__",      "Drop",       "drop",      0,      "DROP")
@@ -234,7 +234,7 @@ DEFINE_HANDLERS (WK_NETWORK_TYPE_XRP, XRP)
 // MARK: HBAR
 
 #define NETWORK_NAME    "Hedera"
-DEFINE_NETWORK (WK_NETWORK_TYPE_HBAR,  "hedera-mainnet", NETWORK_NAME, "mainnet", true, 12295580, 1, 5)
+DEFINE_NETWORK (WK_NETWORK_TYPE_HBAR,  "hedera-mainnet", NETWORK_NAME, "mainnet", true, 12295580, 1, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("hedera-mainnet", "500000", "1m", 1 * 60 * 1000)
 DEFINE_CURRENCY ("hedera-mainnet",     "hedera-mainnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_HBAR,  "native",   NULL,   true)
     DEFINE_UNIT ("hedera-mainnet:__native__",  "tinybar",     "thbar",  0,  "tℏ")
@@ -243,7 +243,7 @@ DEFINE_ADDRESS_SCHEMES  ("hedera-mainnet", WK_ADDRESS_SCHEME_NATIVE)
 DEFINE_MODES            ("hedera-mainnet", WK_SYNC_MODE_API_ONLY)
 
 #if HAS_HBAR_TESTNET
-DEFINE_NETWORK (WK_NETWORK_TYPE_HBAR,  "hedera-testnet", NETWORK_NAME, "testnet", false, 50000, 1, 5)
+DEFINE_NETWORK (WK_NETWORK_TYPE_HBAR,  "hedera-testnet", NETWORK_NAME, "testnet", false, 50000, 1, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("hedera-testnet", "500000", "1m", 1 * 60 * 1000)
 DEFINE_CURRENCY ("hedera-testnet",     "hedera-testnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_HBAR,  "native",   NULL,   true)
     DEFINE_UNIT ("hedera-testnet:__native__",  "tinybar",     "thbar",  0,  "tℏ")
@@ -257,7 +257,7 @@ DEFINE_HANDLERS (WK_NETWORK_TYPE_HBAR, HBAR)
 // MARK: Tezos
 
 #define NETWORK_NAME    "Tezos"
-DEFINE_NETWORK (WK_NETWORK_TYPE_XTZ,  "tezos-mainnet", NETWORK_NAME, "mainnet", true, 1328407, 6, 60)
+DEFINE_NETWORK (WK_NETWORK_TYPE_XTZ,  "tezos-mainnet", NETWORK_NAME, "mainnet", true, 1328407, 6, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("tezos-mainnet", "1", "1m", 1 * 60 * 1000)  // 1 mutez/byte
 DEFINE_CURRENCY ("tezos-mainnet",     "tezos-mainnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_XTZ,  "native",   NULL,   true)
     DEFINE_UNIT ("tezos-mainnet:__native__",  "mutez",     "mtz",   0,  "mutez")
@@ -266,7 +266,7 @@ DEFINE_ADDRESS_SCHEMES  ("tezos-mainnet", WK_ADDRESS_SCHEME_NATIVE)
 DEFINE_MODES            ("tezos-mainnet", WK_SYNC_MODE_API_ONLY)
 
 #if HAS_XTZ_TESTNET
-DEFINE_NETWORK (WK_NETWORK_TYPE_XTZ,  "tezos-testnet", NETWORK_NAME, "testnet", false, 50000, 6, 60)
+DEFINE_NETWORK (WK_NETWORK_TYPE_XTZ,  "tezos-testnet", NETWORK_NAME, "testnet", false, 50000, 6, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("tezos-testnet", "1", "1m", 1 * 60 * 1000)   // 1 mutez/byte
 DEFINE_CURRENCY ("tezos-testnet",     "tezos-testnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_XTZ,  "native",   NULL,   true)
     DEFINE_UNIT ("tezos-testnet:__native__",  "mutez",     "mtz",   0,  "mutez")
@@ -280,7 +280,7 @@ DEFINE_HANDLERS (WK_NETWORK_TYPE_XTZ, XTZ)
 // MARK: XLM Mainnet
 
 #define NETWORK_NAME    "Stellar"
-DEFINE_NETWORK (WK_NETWORK_TYPE_XLM,  "stellar-mainnet", NETWORK_NAME, "mainnet", true, 35516170, 1, 5)
+DEFINE_NETWORK (WK_NETWORK_TYPE_XLM,  "stellar-mainnet", NETWORK_NAME, "mainnet", true, 35516170, 1, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("stellar-mainnet", "100", "5s", 5 * 1000)
 DEFINE_CURRENCY ("stellar-mainnet",     "stellar-mainnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_XLM,  "native",   NULL,   true)
     DEFINE_UNIT ("stellar-mainnet:__native__",  "Stroop",     "stroop",   0,  "STROOP")
@@ -289,7 +289,7 @@ DEFINE_ADDRESS_SCHEMES  ("stellar-mainnet", WK_ADDRESS_SCHEME_NATIVE)
 DEFINE_MODES            ("stellar-mainnet", WK_SYNC_MODE_API_ONLY)
 
 #if HAS_XLM_TESTNET
-DEFINE_NETWORK (WK_NETWORK_TYPE_XLM,  "stellar-testnet", NETWORK_NAME, "testnet", false, 1075721, 1, 5)
+DEFINE_NETWORK (WK_NETWORK_TYPE_XLM,  "stellar-testnet", NETWORK_NAME, "testnet", false, 1075721, 1, 10 * 60)
 DEFINE_NETWORK_FEE_ESTIMATE ("stellar-testnet", "100", "5s", 5 * 1000)
 DEFINE_CURRENCY ("stellar-testnet",     "stellar-testnet:__native__",   NETWORK_NAME,  WK_NETWORK_CURRENCY_XLM,  "native",   NULL,   true)
     DEFINE_UNIT ("stellar-testnet:__native__",  "Stroop",     "stroop",   0,  "STROOP")
