@@ -5,7 +5,6 @@ import PackageDescription
 let package = Package(
     name: "WalletKit",
     platforms: [
-        .macOS(.v10_15),
         .iOS(.v11)
     ],
     products: [
@@ -16,30 +15,16 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../WalletKitCore")
+        .package(name: "WalletKitCore", url: "https://github.com/rockwalletcode/wallet-kit-core.git", .revision("40f8d76ce41426cfe560197e13ff1142ac7c4d7a"))
     ],
 
     targets: [
         .target(
             name: "WalletKit",
             dependencies: [
-                "WalletKitCore"
+                .product(name: "WalletKitCore", package: "WalletKitCore"),
             ],
             path: "WalletKit"
-        ),
-
-        .testTarget(
-            name: "WalletKitTests",
-            dependencies: [
-                "WalletKit"
-            ],
-            path: "WalletKitTests",
-            exclude: [
-                "README.md"
-            ],
-            resources: [
-                .copy ("Resources/WalletKitTestsConfig.json")
-            ]
         ),
     ]
 )
