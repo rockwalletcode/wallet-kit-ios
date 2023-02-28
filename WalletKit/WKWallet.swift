@@ -225,6 +225,31 @@ public final class Wallet: Equatable {
                              take: false)
             }
     }
+    
+    public func createTransfer (outputScript: String,
+                                amount: Amount,
+                                estimatedFeeBasis: TransferFeeBasis,
+                                attributes: Set<TransferAttribute>? = nil,
+                                exchangeId: String? = nil) -> Transfer? {
+        if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
+            return nil
+        }
+
+        let coreAttributesCount = attributes?.count ?? 0
+        var coreAttributes: [WKTransferAttribute?] = attributes?.map { $0.core } ?? []
+        
+        return wkWalletCreateTransferFromScript (core,
+                                           outputScript,
+                                           amount.core,
+                                           estimatedFeeBasis.core,
+                                           coreAttributesCount,
+                                           &coreAttributes,
+                                           exchangeId)
+            .map { Transfer (core: $0,
+                             wallet: self,
+                             take: false)
+            }
+    }
 
     public func createTransfer (outputs: [TransferOutput],
                                 estimatedFeeBasis: TransferFeeBasis) -> Transfer? {
