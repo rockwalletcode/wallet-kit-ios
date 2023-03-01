@@ -292,6 +292,18 @@ public final class Wallet: Equatable {
         }
     }
     
+    public func getAddressFromScript(outputScript: String) -> String? {
+        
+        var addressBuf = [Int8](repeating: 0, count: 64) // Buffer for C string
+        
+        wkWalletGetAddressFromScript (core,
+                                      outputScript,
+                                      &addressBuf,
+                                      addressBuf.count)
+        
+        return String(cString: addressBuf)
+    }
+    
     /// MARK: Estimate Limit
 
     func hackTheAmountIfTezos (amount: Amount) -> Amount {
