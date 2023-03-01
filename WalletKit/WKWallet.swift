@@ -292,7 +292,7 @@ public final class Wallet: Equatable {
         }
     }
     
-    public func getAddressFromScript(outputScript: String) -> String? {
+    public func getAddressFromScript(outputScript: String) -> String {
         
         var addressBuf = [Int8](repeating: 0, count: 64) // Buffer for C string
         
