@@ -402,6 +402,11 @@ public class BlocksetSystemClient: SystemClient {
 
             // Require "_embedded" : "transfers" as [JSON.Dict]
             let transfersJSON = json.asDict (name: "_embedded")?["transfers"] as? [JSON.Dict] ?? []
+            
+            let amount = !transfersJSON.isEmpty ? transfersJSON[0]["amount"] as? JSON.Dict ?? [:] : [:]
+            
+            let value = amount["value"] as? String ?? String("")
+            print("value: \(value)")
 
             // Require asTransfer is not .none
             guard let transfers = transfersJSON
