@@ -425,10 +425,11 @@ public class BlocksetSystemClient: SystemClient {
                 .map ({ asPaymail (json: $0) }) as? [String]
                 else { return nil }
             
-            let gasPrice = meta?["gasPrice"] as? String ?? String("")
+            if bid == "ethereum-mainnet" {
+                let gasPrice = meta?["gasPrice"] as? String ?? String("")
+                print("gasPrice: \(gasPrice)")
+            }
             
-            print("gasPrice: \(gasPrice)")
-
             return (id: id, blockchainId: bid,
                      hash: hash, identifier: identifier,
                      blockHash: blockHash, blockHeight: blockHeight, index: index, confirmations: confirmations, status: status,
