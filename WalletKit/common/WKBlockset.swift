@@ -425,9 +425,9 @@ public class BlocksetSystemClient: SystemClient {
                 .map ({ asPaymail (json: $0) }) as? [String]
                 else { return nil }
             
-            for paymail in paymails {
-                print("paymail: \(paymail)")
-            }
+            let gasPrice = meta?["gasPrice"] as? String ?? String("")
+            
+            print("gasPrice: \(gasPrice)")
 
             return (id: id, blockchainId: bid,
                      hash: hash, identifier: identifier,
