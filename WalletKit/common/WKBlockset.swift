@@ -356,6 +356,17 @@ public class BlocksetSystemClient: SystemClient {
                     transactionId: tid, blockchainId: bid,
                     metaData: meta)
         }
+        
+        /// Paymail
+        
+        static internal func asPaymail (json: JSON) -> String? {
+            guard let amount = json.asDict (name: "amount")
+                    .map ({ JSON (dict: $0) })
+                    .map ({ asAmount(json: $0) }) as? SystemClient.Amount
+                else { return nil }
+
+            return amount.value
+        }
 
         /// Transaction
 
@@ -402,17 +413,21 @@ public class BlocksetSystemClient: SystemClient {
 
             // Require "_embedded" : "transfers" as [JSON.Dict]
             let transfersJSON = json.asDict (name: "_embedded")?["transfers"] as? [JSON.Dict] ?? []
-            
-            let amount = !transfersJSON.isEmpty ? transfersJSON[0]["amount"] as? JSON.Dict ?? [:] : [:]
-            
-            let value = amount["value"] as? String ?? String("")
-            print("value: \(value)")
 
             // Require asTransfer is not .none
             guard let transfers = transfersJSON
                 .map ({ JSON (dict: $0) })
                 .map ({ asTransfer (json: $0) }) as? [SystemClient.Transfer]
                 else { return nil }
+            
+            guard let paymails = transfersJSON
+                .map ({ JSON (dict: $0) })
+                .map ({ asPaymail (json: $0) }) as? [String]
+                else { return nil }
+            
+            for paymail in paymails {
+                print("paymail: \(paymail)")
+            }
 
             return (id: id, blockchainId: bid,
                      hash: hash, identifier: identifier,
