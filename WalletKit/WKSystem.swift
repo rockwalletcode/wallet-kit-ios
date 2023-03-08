@@ -1737,7 +1737,33 @@ extension System {
                         },
                         failure: { (e) in
                             print ("SYS: EstimateTransactionFee: Error: \(e)")
-                            wkClientAnnounceEstimateTransactionFeeFailure (cwm, sid, System.makeClientErrorCore (e)) })
+                            
+                            var status : WKStatus = WK_ERROR_FAILED
+                            var requiredAmount : UInt64 = 0
+                            
+                            switch e {
+                                case .response(_, let pairs, _):
+                                if let result = pairs,
+                                   let message = result["network_message"] as! String? {
+                                    if message == "Invalid transaction." {
+                                        status = WK_ERROR_FAILED
+                                    } else {
+                                        status = WK_SUCCESS
+                                        let messageArr = message.split(separator: " ")
+                                        let requiredAmountString : String = String( messageArr.last ?? "0")
+                                        requiredAmount = UInt64(requiredAmountString) ?? 0
+                                    }
+                                }
+                                case .url, .submission, .noData, .jsonParse, .model, .noEntity:
+                                    status = WK_ERROR_FAILED
+                                }
+                            
+                            if status == WK_SUCCESS {
+                                wkClientAnnounceEstimateTransactionFeeInsufficientGas (cwm, sid, requiredAmount, System.makeClientErrorCore (e))
+                            } else {
+                                wkClientAnnounceEstimateTransactionFeeFailure (cwm, sid, System.makeClientErrorCore (e))
+                            }
+                        })
                 }}
         )
     }
