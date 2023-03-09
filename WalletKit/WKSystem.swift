@@ -1748,10 +1748,23 @@ extension System {
                                     if message == "Invalid transaction." {
                                         status = WK_ERROR_FAILED
                                     } else {
-                                        status = WK_SUCCESS
-                                        let messageArr = message.split(separator: " ")
-                                        let requiredAmountString : String = String( messageArr.last ?? "0")
-                                        requiredAmount = UInt64(requiredAmountString) ?? 0
+                                        do {
+                                            let regex = try NSRegularExpression(pattern: #"want (\d+)"#)
+                                            let results = regex.matches(in: message,
+                                                                        range: NSRange(message.startIndex..., in: message))
+                                            let resultString: [String] = results.map {
+                                                String(message[Range($0.range, in: message)!])
+                                            }
+
+                                            if resultString.isEmpty != true {
+                                                let messageArr = resultString[0].split(separator: " ")
+                                                let requiredAmountString : String = String( messageArr.last ?? "0")
+                                                requiredAmount = UInt64(requiredAmountString) ?? 0
+                                                status = WK_SUCCESS
+                                            }
+                                        } catch let error {
+                                            print("\(error.localizedDescription)")
+                                        }
                                     }
                                 }
                                 case .url, .submission, .noData, .jsonParse, .model, .noEntity:
