@@ -408,7 +408,7 @@ public class BlocksetSystemClient: SystemClient {
                 .map ({ JSON (dict: $0) })
                 .map ({ asTransfer (json: $0) }) as? [SystemClient.Transfer]
                 else { return nil }
-
+            
             return (id: id, blockchainId: bid,
                      hash: hash, identifier: identifier,
                      blockHash: blockHash, blockHeight: blockHeight, index: index, confirmations: confirmations, status: status,
