@@ -1737,7 +1737,46 @@ extension System {
                         },
                         failure: { (e) in
                             print ("SYS: EstimateTransactionFee: Error: \(e)")
-                            wkClientAnnounceEstimateTransactionFeeFailure (cwm, sid, System.makeClientErrorCore (e)) })
+                            
+                            var status : WKStatus = WK_ERROR_FAILED
+                            var requiredAmount : UInt64 = 0
+                            
+                            switch e {
+                                case .response(_, let pairs, _):
+                                if let result = pairs,
+                                   let message = result["network_message"] as! String? {
+                                    if message == "Invalid transaction." {
+                                        status = WK_ERROR_FAILED
+                                    } else {
+                                        do {
+                                            let regex = try NSRegularExpression(pattern: #"want (\d+)"#)
+                                            let results = regex.matches(in: message,
+                                                                        range: NSRange(message.startIndex..., in: message))
+                                            let resultString: [String] = results.map {
+                                                String(message[Range($0.range, in: message)!])
+                                            }
+
+                                            if resultString.isEmpty != true {
+                                                let messageArr = resultString[0].split(separator: " ")
+                                                let requiredAmountString : String = String( messageArr.last ?? "0")
+                                                requiredAmount = UInt64(requiredAmountString) ?? 0
+                                                status = WK_SUCCESS
+                                            }
+                                        } catch let error {
+                                            print("\(error.localizedDescription)")
+                                        }
+                                    }
+                                }
+                                case .url, .submission, .noData, .jsonParse, .model, .noEntity:
+                                    status = WK_ERROR_FAILED
+                                }
+                            
+                            if status == WK_SUCCESS {
+                                wkClientAnnounceEstimateTransactionFeeInsufficientGas (cwm, sid, requiredAmount, System.makeClientErrorCore (e))
+                            } else {
+                                wkClientAnnounceEstimateTransactionFeeFailure (cwm, sid, System.makeClientErrorCore (e))
+                            }
+                        })
                 }}
         )
     }
