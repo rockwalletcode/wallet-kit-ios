@@ -192,6 +192,10 @@ public final class WalletManager: Equatable, CustomStringConvertible {
     public func syncToDepth (depth: WalletManagerSyncDepth) {
         wkWalletManagerSyncToDepth (core, depth.core)
     }
+    
+    public func receiveAddressSync () {
+        wkWalletManagerReceiveAddressSync (core)
+    }
 
     internal func sign (transfer: Transfer, paperKey: String) -> Bool {
         return WK_TRUE == wkWalletManagerSign (core,

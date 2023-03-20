@@ -317,6 +317,11 @@ public final class System {
                                                        &coreCurrences,
                                                        coreCurrences.count)
     }
+    
+    public func requestReceiveAddressSync(manager: WalletManager) {
+        wkSystemReceiveAddressSync (core,
+                                    manager.core)
+    }
 
     ///
     /// Remove (aka 'wipe') the persistent storage associated with `network` at `path`.  This should
@@ -1045,6 +1050,8 @@ public enum SystemEvent {
     case managerAdded (manager: WalletManager)
     // case managerChanged
     // case managerDeleted
+    
+    case receiveAddressSync (manager: WalletManager)
 
     init (system: System, core: WKSystemEvent) {
         switch core.type {
@@ -1079,6 +1086,12 @@ public enum SystemEvent {
 
         case WK_SYSTEM_EVENT_DISCOVERED_NETWORKS:
             self = .discoveredNetworks (networks: system.networks)
+            
+        case WK_SYSTEM_EVENT_RECEIVE_ADDRESS_SYNC:
+                self = .receiveAddressSync (manager: WalletManager (core: core.u.manager,
+                                                                    system: system,
+                                                                    callbackCoordinator: system.callbackCoordinator,
+                                                                    take: false))
 
         default:
             preconditionFailure()
@@ -1626,6 +1639,26 @@ extension System {
                             wkClientAnnounceBlockNumberFailure (cwm, sid, System.makeClientErrorCore (e))
                         })
                 }},
+            
+            funcGetBlockNumberReceiveAddressSync: { (context, cwm, sid) in
+                precondition (nil != context  && nil != cwm)
+
+                guard let (_, manager) = System.systemExtract (context, cwm)
+                else { System.cleanup("SYS: GetBlockNumber: Missed {cwm}", cwm: cwm); return }
+                print ("SYS: GetBlockNumber")
+
+                manager.client.getBlockchain (blockchainId: manager.network.uids) {
+                    (res: Result<SystemClient.Blockchain, SystemClientError>) in
+                    defer { wkWalletManagerGive (cwm!) }
+                    res.resolve (
+                        success: {
+                            wkClientAnnounceBlockNumberReceiveAddressSyncSuccess (cwm, sid, $0.blockHeight ?? 0, $0.verifiedBlockHash)
+                        },
+                        failure: { (e) in
+                            print ("SYS: GetBlockNumber: Error: \(e)")
+                            wkClientAnnounceBlockNumberReceiveAddressSyncFailure (cwm, sid, System.makeClientErrorCore (e))
+                        })
+                }},
 
             funcGetTransactions: { (context, cwm, sid, addresses, addressesCount, begBlockNumber, endBlockNumber) in
                 precondition (nil != context  && nil != cwm)
@@ -1652,6 +1685,34 @@ extension System {
                             print ("SYS: GetTransactions: Error: \(e)")
                             wkClientAnnounceTransactionsFailure (cwm, sid, System.makeClientErrorCore (e)) })
                 }},
+            
+            funcGetTransactionsReceiveAddressSync: { (context, cwm, sid, addresses, addressesCount, begBlockNumber, endBlockNumber) in
+                precondition (nil != context  && nil != cwm)
+
+                guard let (_, manager) = System.systemExtract (context, cwm)
+                else { System.cleanup ("SYS: BTC: GetTransactions: Missed {cwm}", cwm: cwm); return }
+                print ("SYS: BTC: GetTransactions: Blocks: {\(begBlockNumber), \(endBlockNumber)}")
+
+                let addresses = System.makeAddresses (addresses, addressesCount)
+
+                manager.client.getTransactions (blockchainId: manager.network.uids,
+                                                addresses: addresses,
+                                                begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
+                                                endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
+                                                includeRaw: true,
+                                                includeTransfers: false) {
+                    (res: Result<[SystemClient.Transaction], SystemClientError>) in
+                    defer { wkWalletManagerGive (cwm!) }
+                    res.resolve(
+                        success: {
+                            var bundles: [WKClientTransactionBundle?] = System.canonicalizeTransactions ($0).map { System.makeTransactionBundle ($0) }
+                            wkClientAnnounceTransactionsReceiveAddressSyncSuccess (cwm, sid,  &bundles, bundles.count)
+                        },
+                        failure: { (e) in
+                            print ("SYS: GetTransactions: Error: \(e)")
+                            wkClientAnnounceTransactionsReceiveAddressSyncFailure (cwm, sid, System.makeClientErrorCore (e)) })
+                }},
+
 
             funcGetTransfers: { (context, cwm, sid, addresses, addressesCount, begBlockNumber, endBlockNumber) in
                 precondition (nil != context  && nil != cwm)
