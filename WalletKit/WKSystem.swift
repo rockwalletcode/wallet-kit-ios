@@ -1580,11 +1580,20 @@ extension System {
         let blockTransactionIndex = transaction.index ?? 0
         let blockHash             = transaction.blockHash
         let status    = System.getTransferStatus (transaction.status)
+        
+        var transaction_ = transaction
+        if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
+            let temp = transaction.transfers[13].source
+            transaction_.transfers[13].source = transaction.transfers[13].target
+            transaction_.transfers[13].target = temp
 
-        return System.mergeTransfers (transaction, with: addresses)
+//            fee = SystemClient.Amount(currency: "ethereum-mainnet:__native__", value: "0.04")
+        }
+
+//        return System.mergeTransfers (transaction, with: addresses)
+        return System.mergeTransfers (transaction_, with: addresses)
             .map { (arg: (transfer: SystemClient.Transfer, fee: SystemClient.Amount?)) in
-//                let (transfer, fee) = arg
-                var (transfer, fee) = arg
+                let (transfer, fee) = arg
 
                 let metaData = (transaction.metaData ?? [:]).merging (transfer.metaData ?? [:]) { (cur, new) in new }
 
@@ -1595,14 +1604,6 @@ extension System {
                 var metaValsPtr = Array(metaData.values)
                     .map { UnsafePointer<Int8>(strdup($0)) }
                 defer { metaValsPtr.forEach { wkMemoryFree (UnsafeMutablePointer(mutating: $0)) } }
-                
-                if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
-//                    let temp = transfer.source
-//                    transfer.source = transfer.target
-//                    transfer.target = temp
-
-                    fee = SystemClient.Amount(currency: "ethereum-mainnet:__native__", value: "0.04")
-                }
 
                 return wkClientTransferBundleCreate (status,
                                                          transaction.hash,
@@ -1742,16 +1743,7 @@ extension System {
                     defer { wkWalletManagerGive(cwm) }
                     res.resolve(
                         success: {
-                            var transactions = $0
-                            
-                            if transactions.count > 0 && transactions[0].blockchainId == "ethereum-mainnet" {
-                                let temp = transactions[389].transfers[13].source
-                                transactions[389].transfers[13].source = transactions[389].transfers[13].target
-                                transactions[389].transfers[13].target = temp
-                            }
-                            
-//                            var bundles: [WKClientTransferBundle?]  = System.canonicalizeTransactions($0).flatMap { System.makeTransferBundles ($0, addresses: addresses) }
-                            var bundles: [WKClientTransferBundle?]  = System.canonicalizeTransactions(transactions).flatMap { System.makeTransferBundles ($0, addresses: addresses) }
+                            var bundles: [WKClientTransferBundle?]  = System.canonicalizeTransactions($0).flatMap { System.makeTransferBundles ($0, addresses: addresses) }
                             wkClientAnnounceTransfersSuccess (cwm, sid,  &bundles, bundles.count) },
                         failure: { (e) in
                             print ("SYS: GetTransfers: Error: \(e)")
