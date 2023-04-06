@@ -1432,6 +1432,7 @@ extension System {
                     let temp = transfers[i].source
                     transfers[i].source = transfers[i].target
                     transfers[i].target = temp
+                }
             }
 
             // Note for later: all transfers have a unique id
