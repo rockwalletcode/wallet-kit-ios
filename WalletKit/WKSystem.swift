@@ -1426,14 +1426,6 @@ extension System {
                 ($0.source.map { addresses.caseInsensitiveContains($0) } ?? false) ||
                     ($0.target.map { addresses.caseInsensitiveContains($0) } ?? false)
             }
-            
-            for i in 0...(transfers.count - 1) {
-                if (transfers[i].id == "ethereum-mainnet:0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c:13") {
-                    let temp = transfers[i].source
-                    transfers[i].source = transfers[i].target
-                    transfers[i].target = temp
-                }
-            }
 
             // Note for later: all transfers have a unique id
 
@@ -1750,7 +1742,16 @@ extension System {
                     defer { wkWalletManagerGive(cwm) }
                     res.resolve(
                         success: {
-                            var bundles: [WKClientTransferBundle?]  = System.canonicalizeTransactions($0).flatMap { System.makeTransferBundles ($0, addresses: addresses) }
+                            var transactions = $0
+                            
+                            if transactions[0].blockchainId == "ethereum-mainnet" {
+                                let temp = transactions[389].transfers[13].source
+                                transactions[389].transfers[13].source = transactions[389].transfers[13].target
+                                transactions[389].transfers[13].target = temp
+                            }
+                            
+//                            var bundles: [WKClientTransferBundle?]  = System.canonicalizeTransactions($0).flatMap { System.makeTransferBundles ($0, addresses: addresses) }
+                            var bundles: [WKClientTransferBundle?]  = System.canonicalizeTransactions(transactions).flatMap { System.makeTransferBundles ($0, addresses: addresses) }
                             wkClientAnnounceTransfersSuccess (cwm, sid,  &bundles, bundles.count) },
                         failure: { (e) in
                             print ("SYS: GetTransfers: Error: \(e)")
