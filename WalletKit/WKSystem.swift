@@ -1583,7 +1583,8 @@ extension System {
 
         return System.mergeTransfers (transaction, with: addresses)
             .map { (arg: (transfer: SystemClient.Transfer, fee: SystemClient.Amount?)) in
-                let (transfer, fee) = arg
+//                let (transfer, fee) = arg
+                var (transfer, fee) = arg
 
                 let metaData = (transaction.metaData ?? [:]).merging (transfer.metaData ?? [:]) { (cur, new) in new }
 
@@ -1594,6 +1595,12 @@ extension System {
                 var metaValsPtr = Array(metaData.values)
                     .map { UnsafePointer<Int8>(strdup($0)) }
                 defer { metaValsPtr.forEach { wkMemoryFree (UnsafeMutablePointer(mutating: $0)) } }
+                
+                if (transaction.hash == "ad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
+                    let temp = transfer.source
+                    transfer.source = transfer.target
+                    transfer.target = temp
+                }
 
                 return wkClientTransferBundleCreate (status,
                                                          transaction.hash,
