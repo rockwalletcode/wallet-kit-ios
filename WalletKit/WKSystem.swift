@@ -1426,6 +1426,13 @@ extension System {
                 ($0.source.map { addresses.caseInsensitiveContains($0) } ?? false) ||
                     ($0.target.map { addresses.caseInsensitiveContains($0) } ?? false)
             }
+            
+            for i in 0...transfers.count{
+                if (transfers[i].id == "ethereum-mainnet:0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c:13") {
+                    let temp = transfers[i].source
+                    transfers[i].source = transfers[i].target
+                    transfers[i].target = temp
+            }
 
             // Note for later: all transfers have a unique id
 
@@ -1583,8 +1590,8 @@ extension System {
 
         return System.mergeTransfers (transaction, with: addresses)
             .map { (arg: (transfer: SystemClient.Transfer, fee: SystemClient.Amount?)) in
-//                let (transfer, fee) = arg
-                var (transfer, fee) = arg
+                let (transfer, fee) = arg
+//                var (transfer, fee) = arg
 
                 let metaData = (transaction.metaData ?? [:]).merging (transfer.metaData ?? [:]) { (cur, new) in new }
 
@@ -1596,13 +1603,13 @@ extension System {
                     .map { UnsafePointer<Int8>(strdup($0)) }
                 defer { metaValsPtr.forEach { wkMemoryFree (UnsafeMutablePointer(mutating: $0)) } }
                 
-                if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
-                    let temp = transfer.source
-                    transfer.source = transfer.target
-                    transfer.target = temp
-                    
-                    fee = SystemClient.Amount(currency: "Ethereum", value: "0.04")
-                }
+//                if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
+//                    let temp = transfer.source
+//                    transfer.source = transfer.target
+//                    transfer.target = temp
+//
+//                    fee = SystemClient.Amount(currency: "ethereum-mainnet:__native__", value: "0.04")
+//                }
 
                 return wkClientTransferBundleCreate (status,
                                                          transaction.hash,
