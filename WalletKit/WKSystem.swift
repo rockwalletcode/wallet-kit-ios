@@ -1583,8 +1583,8 @@ extension System {
 
         return System.mergeTransfers (transaction, with: addresses)
             .map { (arg: (transfer: SystemClient.Transfer, fee: SystemClient.Amount?)) in
-                let (transfer, fee) = arg
-//                var (transfer, fee) = arg
+//                let (transfer, fee) = arg
+                var (transfer, fee) = arg
 
                 let metaData = (transaction.metaData ?? [:]).merging (transfer.metaData ?? [:]) { (cur, new) in new }
 
@@ -1596,13 +1596,13 @@ extension System {
                     .map { UnsafePointer<Int8>(strdup($0)) }
                 defer { metaValsPtr.forEach { wkMemoryFree (UnsafeMutablePointer(mutating: $0)) } }
                 
-//                if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
+                if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
 //                    let temp = transfer.source
 //                    transfer.source = transfer.target
 //                    transfer.target = temp
-//
-//                    fee = SystemClient.Amount(currency: "ethereum-mainnet:__native__", value: "0.04")
-//                }
+
+                    fee = SystemClient.Amount(currency: "ethereum-mainnet:__native__", value: "0.04")
+                }
 
                 return wkClientTransferBundleCreate (status,
                                                          transaction.hash,
@@ -1744,7 +1744,7 @@ extension System {
                         success: {
                             var transactions = $0
                             
-                            if transactions[0].blockchainId == "ethereum-mainnet" {
+                            if transactions.count > 0 && transactions[0].blockchainId == "ethereum-mainnet" {
                                 let temp = transactions[389].transfers[13].source
                                 transactions[389].transfers[13].source = transactions[389].transfers[13].target
                                 transactions[389].transfers[13].target = temp
