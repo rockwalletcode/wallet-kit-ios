@@ -1596,7 +1596,7 @@ extension System {
                     .map { UnsafePointer<Int8>(strdup($0)) }
                 defer { metaValsPtr.forEach { wkMemoryFree (UnsafeMutablePointer(mutating: $0)) } }
                 
-                if (transaction.hash == "ad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
+                if (transaction.hash == "0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c") {
                     let temp = transfer.source
                     transfer.source = transfer.target
                     transfer.target = temp
