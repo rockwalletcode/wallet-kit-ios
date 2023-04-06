@@ -1427,13 +1427,13 @@ extension System {
                     ($0.target.map { addresses.caseInsensitiveContains($0) } ?? false)
             }
             
-//            for i in 0...transfers.count{
-//                if (transfers[i].id == "ethereum-mainnet:0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c:13") {
-//                    let temp = transfers[i].source
-//                    transfers[i].source = transfers[i].target
-//                    transfers[i].target = temp
-//                }
-//            }
+            for i in 0...(transfers.count - 1) {
+                if (transfers[i].id == "ethereum-mainnet:0xad486be3a3f5a081cb835ca0fcad1815e555dfa64b1809b8fe82e817c6daaf4c:13") {
+                    let temp = transfers[i].source
+                    transfers[i].source = transfers[i].target
+                    transfers[i].target = temp
+                }
+            }
 
             // Note for later: all transfers have a unique id
 
