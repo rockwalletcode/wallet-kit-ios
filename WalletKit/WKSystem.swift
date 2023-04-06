@@ -1600,6 +1600,8 @@ extension System {
                     let temp = transfer.source
                     transfer.source = transfer.target
                     transfer.target = temp
+                    
+                    fee = SystemClient.Amount(currency: "Ethereum", value: "0.04")
                 }
 
                 return wkClientTransferBundleCreate (status,
