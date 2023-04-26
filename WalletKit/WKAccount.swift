@@ -125,6 +125,29 @@ public final class Account {
 
         return WK_TRUE == wkAccountValidatePaperKey (phrase, &words)
     }
+    
+    public static func getXPubFromSerialization (serialization: Data, code: String, phrase: String) -> String {
+        var bytes = [UInt8](serialization)
+
+        var wkCode : WKNetworkType = WK_NETWORK_TYPE_BTC
+
+        if code == "btc" || code == "BTC" {
+            wkCode = WK_NETWORK_TYPE_BTC
+        } else if code == "bch" || code == "BCH" {
+            wkCode = WK_NETWORK_TYPE_BCH
+        } else if code == "bsv" || code == "BSV" {
+            wkCode = WK_NETWORK_TYPE_BSV
+        } else if code == "ltc" || code == "LTC" {
+            wkCode = WK_NETWORK_TYPE_LTC
+        } else if code == "doge" || code == "DOGE" {
+            wkCode = WK_NETWORK_TYPE_DOGE
+        }
+
+        var xpubBuf = [Int8](repeating: 0, count: 120)
+        wkAccountGetXPubFromSerialization (&bytes, bytes.count, wkCode, &xpubBuf, xpubBuf.count, phrase)
+        let xpubStr = String(cString: xpubBuf)
+        return xpubStr
+    }
 
     ///
     /// Check if `account` is initialized for `network`.  Some networks require that accounts
