@@ -1763,8 +1763,6 @@ extension System {
                         failure: { (e) in
                             print ("SYS: SubmitTransaction: Error: \(e)")
                             
-                            var status : WKTransferStateType = WK_TRANSFER_STATE_ERRORED
-                            
                             switch e {
                                 case .response(_, let pairs, _):
                                 if let result = pairs,
@@ -1772,12 +1770,12 @@ extension System {
                                    let message = error["server_message"],
                                    let code = error["code"] {
                                     if message == "Session timeout" {
-                                        status = WK_TRANSFER_STATE_ERRORED
+                                        print("Session timeout")
                                     }
                                     print("\(code)")
                                 }
                                 case .url, .submission, .noData, .jsonParse, .model, .noEntity:
-                                    status = WK_TRANSFER_STATE_ERRORED
+                                    print("default")
                             }
                             
                             wkClientAnnounceSubmitTransferFailure (cwm, sid, System.makeClientErrorCore (e)) })
