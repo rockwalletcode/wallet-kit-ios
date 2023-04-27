@@ -1763,24 +1763,24 @@ extension System {
                         failure: { (e) in
                             print ("SYS: SubmitTransaction: Error: \(e)")
                             
+                            var errorType : WKTransferSubmitErrorType = WK_TRANSFER_SUBMIT_ERROR_UNKNOWN
+                            
                             switch e {
                                 case .response(_, let pairs, _):
                                 if let result = pairs,
-                                   let error = result["error"] as? Dictionary<String, String> {
-                                    let message = error["server_message"]
-                                    let code = error["code"]
-
-                                    if message == "Session timeout" {
-                                        print("Session timeout")
+                                   let error = result["error"] as? Dictionary<String, String>,
+                                   let message = error["server_message"] {
+                                    if message == "EMAIL" {
+                                        errorType = WK_TRANSFER_SUBMIT_ERROR_EMAIL
+                                    } else if message == "AUTHENTICATOR" {
+                                        errorType = WK_TRANSFER_SUBMIT_ERROR_AUTHENTICATOR
                                     }
-                                    print("\(code)")
                                 }
-                                    print("response")
                                 case .url, .submission, .noData, .jsonParse, .model, .noEntity:
-                                    print("default")
+                                    errorType = WK_TRANSFER_SUBMIT_ERROR_UNKNOWN
                             }
                             
-                            wkClientAnnounceSubmitTransferFailure (cwm, sid, System.makeClientErrorCore (e)) })
+                            wkClientAnnounceSubmitTransferFailure (cwm, sid, System.makeClientErrorCore (e), errorType)})
                 }},
 
             funcEstimateTransactionFee: { (context, cwm, sid, transactionBytes, transactionBytesLength, hashAsHex) in
