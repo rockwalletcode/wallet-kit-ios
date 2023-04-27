@@ -320,6 +320,8 @@ public enum TransferSubmitErrorType: Equatable, Error {
     case transactionDuplicate
     case transaction
     case unknown
+    case email
+    case authenticator
 
     case clientBadRequest
     case clientPermission
@@ -343,6 +345,8 @@ public enum TransferSubmitErrorType: Equatable, Error {
         case WK_TRANSFER_SUBMIT_ERROR_TRANSACTION_DUPLICATE: self = .transactionDuplicate
         case WK_TRANSFER_SUBMIT_ERROR_TRANSACTION:           self = .transaction
         case WK_TRANSFER_SUBMIT_ERROR_UNKNOWN:               self = .unknown
+        case WK_TRANSFER_SUBMIT_ERROR_EMAIL:                 self = .email
+        case WK_TRANSFER_SUBMIT_ERROR_AUTHENTICATOR:         self = .authenticator
 
             // Client
         case WK_TRANSFER_SUBMIT_ERROR_CLIENT_BAD_REQUEST:  self = .clientBadRequest
