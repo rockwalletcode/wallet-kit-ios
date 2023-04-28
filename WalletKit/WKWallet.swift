@@ -198,6 +198,8 @@ public final class Wallet: Equatable {
     ///   - estimatedFeeBasis: The basis for 'fee'
     ///   - attributes: Optional transfer attributes.
     ///   - exchangeId: Optional needed in swaps
+    ///   - secondFactorCode: Optional needed in 2FA
+    ///   - secondFactorBackup: Optional needed in 2FA
     ///
     /// - Returns: A new transfer
     ///
@@ -205,7 +207,9 @@ public final class Wallet: Equatable {
                                 amount: Amount,
                                 estimatedFeeBasis: TransferFeeBasis,
                                 attributes: Set<TransferAttribute>? = nil,
-                                exchangeId: String? = nil) -> Transfer? {
+                                exchangeId: String? = nil,
+                                secondFactorCode: String? = nil,
+                                secondFactorBackup: String? = nil) -> Transfer? {
         if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
             return nil
         }
@@ -219,7 +223,9 @@ public final class Wallet: Equatable {
                                            estimatedFeeBasis.core,
                                            coreAttributesCount,
                                            &coreAttributes,
-                                           exchangeId)
+                                           exchangeId,
+                                           secondFactorCode,
+                                           secondFactorBackup)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)
@@ -230,7 +236,9 @@ public final class Wallet: Equatable {
                                 amount: Amount,
                                 estimatedFeeBasis: TransferFeeBasis,
                                 attributes: Set<TransferAttribute>? = nil,
-                                exchangeId: String? = nil) -> Transfer? {
+                                exchangeId: String? = nil,
+                                secondFactorCode: String? = nil,
+                                secondFactorBackup: String? = nil) -> Transfer? {
         if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
             return nil
         }
@@ -244,7 +252,9 @@ public final class Wallet: Equatable {
                                            estimatedFeeBasis.core,
                                            coreAttributesCount,
                                            &coreAttributes,
-                                           exchangeId)
+                                           exchangeId,
+                                           secondFactorCode,
+                                           secondFactorBackup)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)

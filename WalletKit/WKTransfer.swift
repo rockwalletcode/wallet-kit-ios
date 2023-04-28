@@ -47,6 +47,12 @@ public final class Transfer: Equatable {
     /// The exchamgeId returned from the swap EP
     public var exchangeId: String?
     
+    /// A 2FA parameter
+    public var secondFactorCode: String?
+    
+    /// A 2FA parameter
+    public var secondFactorBackup: String?
+    
     /// The source pays the fee and sends the amount.
     public private(set) lazy var source: Address? = {
         wkTransferGetSourceAddress (core)
