@@ -965,6 +965,8 @@ public class BlocksetSystemClient: SystemClient {
                                    transaction: Data,
                                    identifier: String?,
                                    exchangeId: String?,
+                                   secondFactorCode: String?,
+                                   secondFactorBackup: String?,
                                    completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void) {
         let data            = transaction.base64EncodedString()
         var json: JSON.Dict = [
@@ -975,6 +977,14 @@ public class BlocksetSystemClient: SystemClient {
         
         if let exchangeId = exchangeId {
             json["exchange_id"] = exchangeId
+        }
+        
+        if let secondFactorCode = secondFactorCode {
+            json["second_factor_code"] = secondFactorCode
+        }
+        
+        if let secondFactorBackup = secondFactorBackup {
+            json["second_factor_backup"] = secondFactorBackup
         }
 
         makeRequest (bdbDataTaskFunc, bdbBaseURL,
