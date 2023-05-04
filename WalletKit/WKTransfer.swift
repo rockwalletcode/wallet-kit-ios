@@ -326,8 +326,8 @@ public enum TransferSubmitErrorType: Equatable, Error {
     case transactionDuplicate
     case transaction
     case unknown
-    case email
     case authenticator
+    case email
 
     case clientBadRequest
     case clientPermission
