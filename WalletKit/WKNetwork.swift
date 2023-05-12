@@ -302,6 +302,7 @@ extension Network: Hashable {
 ///
 public enum NetworkType: CustomStringConvertible {
     case btc
+    case btc_bip32
     case bch
     case bsv
     case ltc
@@ -316,6 +317,7 @@ public enum NetworkType: CustomStringConvertible {
     internal init (core: WKNetworkType) {
         switch core {
         case WK_NETWORK_TYPE_BTC:  self = .btc
+        case WK_NETWORK_TYPE_BTC_BIP32:  self = .btc_bip32
         case WK_NETWORK_TYPE_BCH:  self = .bch
         case WK_NETWORK_TYPE_BSV:  self = .bsv
         case WK_NETWORK_TYPE_LTC:  self = .ltc
@@ -333,6 +335,7 @@ public enum NetworkType: CustomStringConvertible {
     internal var core: WKNetworkType {
         switch self {
         case .btc: return WK_NETWORK_TYPE_BTC
+        case .btc_bip32: return WK_NETWORK_TYPE_BTC_BIP32
         case .bch: return WK_NETWORK_TYPE_BCH
         case .bsv: return WK_NETWORK_TYPE_BSV
         case .ltc: return WK_NETWORK_TYPE_LTC
