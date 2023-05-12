@@ -305,6 +305,7 @@ public enum NetworkType: CustomStringConvertible {
     case btc_bip32
     case bch
     case bsv
+    case bsv_bip32
     case ltc
     case doge
     case eth
@@ -320,6 +321,7 @@ public enum NetworkType: CustomStringConvertible {
         case WK_NETWORK_TYPE_BTC_BIP32:  self = .btc_bip32
         case WK_NETWORK_TYPE_BCH:  self = .bch
         case WK_NETWORK_TYPE_BSV:  self = .bsv
+        case WK_NETWORK_TYPE_BSV_BIP32:  self = .bsv_bip32
         case WK_NETWORK_TYPE_LTC:  self = .ltc
         case WK_NETWORK_TYPE_DOGE: self = .doge
         case WK_NETWORK_TYPE_ETH:  self = .eth
@@ -338,6 +340,7 @@ public enum NetworkType: CustomStringConvertible {
         case .btc_bip32: return WK_NETWORK_TYPE_BTC_BIP32
         case .bch: return WK_NETWORK_TYPE_BCH
         case .bsv: return WK_NETWORK_TYPE_BSV
+        case .bsv_bip32: return WK_NETWORK_TYPE_BSV_BIP32
         case .ltc: return WK_NETWORK_TYPE_LTC
         case .doge: return WK_NETWORK_TYPE_DOGE
         case .eth: return WK_NETWORK_TYPE_ETH
