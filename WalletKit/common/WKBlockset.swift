@@ -400,15 +400,16 @@ public class BlocksetSystemClient: SystemClient {
             let timestamp     = json.asDate   (name: "timestamp")
             let meta          = json.asDict(name: "meta")?.mapValues { return $0 as! String }
             
+//            let raw = json.asData (name: "raw")
+            var raw: Data = Data(capacity: 256)
+            
             if let rawStr = json.asString (name: "raw") {
                 if (rawStr.isHexNumber) {
-                    print("true")
+                    raw = rawStr.hexadecimal ?? Data(capacity: 256)
                 } else {
-                    print("false")
+                    raw = json.asData (name: "raw") ?? Data(capacity: 256)
                 }
             }
-            
-            let raw = json.asData (name: "raw")
 
             // Require "_embedded" : "transfers" as [JSON.Dict]
             let transfersJSON = json.asDict (name: "_embedded")?["transfers"] as? [JSON.Dict] ?? []
