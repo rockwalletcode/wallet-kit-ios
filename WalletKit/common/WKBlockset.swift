@@ -402,9 +402,9 @@ public class BlocksetSystemClient: SystemClient {
             
             var raw: Data?
             
-            if let rawStr = json.asString (name: "raw") {
-                if (rawStr.isHexadecimal) {
-                    raw = rawStr.asData
+            if let rawString = json.asString (name: "raw") {
+                if (rawString.isHexadecimal) {
+                    raw = rawString.asData
                 } else {
                     raw = json.asData (name: "raw")
                 }
