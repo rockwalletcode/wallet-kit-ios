@@ -373,7 +373,7 @@ public class BlocksetSystemClient: SystemClient {
                 return false
             }
         }
-        
+
         static internal func asTransaction (json: JSON) -> SystemClient.Transaction? {
             guard let id = json.asString(name: "transaction_id"),
                 let bid        = json.asString (name: "blockchain_id"),
