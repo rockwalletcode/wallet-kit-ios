@@ -397,8 +397,18 @@ public class BlocksetSystemClient: SystemClient {
             let confirmations = json.asUInt64 (name: "confirmations")
             let timestamp     = json.asDate   (name: "timestamp")
             let meta          = json.asDict(name: "meta")?.mapValues { return $0 as! String }
-
-            let raw = json.asData (name: "raw")
+            
+            var raw: Data?
+            
+            if let rawString = json.asString (name: "raw") {
+                if (rawString.isHexadecimal) {
+                    raw = rawString.asData
+                } else {
+                    raw = json.asData (name: "raw")
+                }
+            } else {
+                raw = json.asData (name: "raw")
+            }
 
             // Require "_embedded" : "transfers" as [JSON.Dict]
             let transfersJSON = json.asDict (name: "_embedded")?["transfers"] as? [JSON.Dict] ?? []
@@ -1721,4 +1731,29 @@ public class BlocksetSystemClient: SystemClient {
             }
         }
     }
+}
+
+extension String {
+    var isHexadecimal: Bool {
+        filter(\.isHexDigit).count == count
+    }
+}
+
+extension String {
+    
+    var asData: Data? {
+        var data = Data(capacity: count / 2)
+        
+        let regex = try! NSRegularExpression(pattern: "[0-9a-f]{1,2}", options: .caseInsensitive)
+        regex.enumerateMatches(in: self, range: NSRange(startIndex..., in: self)) { match, _, _ in
+            let byteString = (self as NSString).substring(with: match!.range)
+            let num = UInt8(byteString, radix: 16)!
+            data.append(num)
+        }
+        
+        guard data.count > 0 else { return nil }
+        
+        return data
+    }
+    
 }
