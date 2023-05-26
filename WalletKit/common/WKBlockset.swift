@@ -1741,12 +1741,6 @@ extension String {
 
 extension String {
     
-    /// Create `Data` from hexadecimal string representation
-    ///
-    /// This creates a `Data` object from hex string. Note, if the string has any spaces or non-hex characters (e.g. starts with '<' and with a '>'), those are ignored and only hex characters are processed.
-    ///
-    /// - returns: Data represented by this hexadecimal string.
-    
     var asData: Data? {
         var data = Data(capacity: count / 2)
         
