@@ -223,6 +223,13 @@ public final class WalletManager: Equatable, CustomStringConvertible {
                                          transfer.wallet.core,
                                          transfer.core)
     }
+    
+    internal func submitSweeper (transfer: Transfer, key: Key) {
+        wkWalletManagerSubmitSweeper(core,
+                                        transfer.wallet.core,
+                                        transfer.core,
+                                        key.core)
+    }
 
     internal func setNetworkReachable (_ isNetworkReachable: Bool) {
         wkWalletManagerSetNetworkReachable (core,
@@ -410,7 +417,7 @@ public final class WalletSweeper {
         guard let transfer = wallet.createTransfer(sweeper: self, estimatedFeeBasis: estimatedFeeBasis)
             else { return nil }
 
-        manager.submit(transfer: transfer, key: key)
+        manager.submitSweeper(transfer: transfer, key: key)
         return transfer
     }
 
