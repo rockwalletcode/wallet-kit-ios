@@ -48,8 +48,6 @@ public final class System {
 
     /// If on mainnet
     public let onMainnet: Bool
-    
-    public let defaultClient: SystemClient
 
     /// Flag indicating if the network is reachable; defaults to true
     internal var isNetworkReachable: Bool {
@@ -203,7 +201,6 @@ public final class System {
                    listener: SystemListener,
                    account: Account,
                    onMainnet: Bool,
-                   defaultClient: SystemClient,
                    path: String,
                    listenerQueue: DispatchQueue? = nil) {
 
@@ -218,7 +215,6 @@ public final class System {
         self.client    = client
         self.account   = account
         self.onMainnet = onMainnet
-        self.defaultClient = defaultClient
         self.listenerQueue = listenerQueue ?? DispatchQueue (label: "Crypto System Listener")
         self.callbackCoordinator = SystemCallbackCoordinator (queue: self.listenerQueue)
 
@@ -246,14 +242,12 @@ public final class System {
                                listener: SystemListener,
                                account: Account,
                                onMainnet: Bool,
-                               defaultClient: SystemClient,
                                path: String,
                                listenerQueue: DispatchQueue? = nil) -> System {
         return System (client: client,
                        listener: listener,
                        account: account,
                        onMainnet: onMainnet,
-                       defaultClient: defaultClient,
                        path: path,
                        listenerQueue: listenerQueue)
     }
@@ -1761,8 +1755,7 @@ extension System {
                 
                 let secondFactorBackupString = secondFactorBackup.map { asUTF8String($0) }
 
-//                manager.client.createTransaction (blockchainId: manager.network.uids,
-                self.defaultClient.createTransaction (blockchainId: manager.network.uids,
+                manager.client.createTransaction (blockchainId: manager.network.uids,
                                                   transaction: data,
                                                   identifier: identifier.map { asUTF8String($0) },
                                                   exchangeId: exchangeIdString,
