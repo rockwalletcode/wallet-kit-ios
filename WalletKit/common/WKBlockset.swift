@@ -79,6 +79,8 @@ public class BlocksetSystemClient: SystemClient {
 
     /// A DataTaskFunc for submission to the BRD BlockChain DB
     internal let bdbDataTaskFunc: DataTaskFunc
+    
+    internal let bdbDefaultDataTaskFunc: DataTaskFunc
 
     /// A default DataTaskFunc that simply invokes `session.dataTask (with: request, ...)`
     static let defaultDataTaskFunc: DataTaskFunc = {
@@ -200,13 +202,17 @@ public class BlocksetSystemClient: SystemClient {
     public init (bdbBaseURL: String = "https://api.blockset.com",
                  bdbDataTaskFunc: DataTaskFunc? = nil,
                  apiBaseURL: String = "https://api.breadwallet.com",
-                 apiDataTaskFunc: DataTaskFunc? = nil) {
+                 apiDataTaskFunc: DataTaskFunc? = nil,
+                 bdbDefaultDataTaskFunc: DataTaskFunc? = nil) {
 
         self.bdbBaseURL = bdbBaseURL
         self.apiBaseURL = apiBaseURL
 
         self.bdbDataTaskFunc = bdbDataTaskFunc ?? BlocksetSystemClient.defaultDataTaskFunc
         self.apiDataTaskFunc = apiDataTaskFunc ?? BlocksetSystemClient.defaultDataTaskFunc
+        
+        self.bdbDefaultDataTaskFunc = bdbDefaultDataTaskFunc ?? BlocksetSystemClient.defaultDataTaskFunc
+        
     }
 
     ///
@@ -997,7 +1003,8 @@ public class BlocksetSystemClient: SystemClient {
             json["second_factor_backup"] = secondFactorBackup
         }
 
-        makeRequest (bdbDataTaskFunc, bdbBaseURL,
+//        makeRequest (bdbDataTaskFunc, bdbBaseURL,
+        makeRequest (bdbDefaultDataTaskFunc, bdbBaseURL,
                      path: "/transactions",
                      data: json,
                      httpMethod: "POST") {
