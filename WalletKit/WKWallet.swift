@@ -290,8 +290,9 @@ public final class Wallet: Equatable {
     }
 
     internal func createTransfer(sweeper: WalletSweeper,
-                                 estimatedFeeBasis: TransferFeeBasis) -> Transfer? {
-        return wkWalletSweeperCreateTransferForWalletSweep(sweeper.core, manager.core, self.core, estimatedFeeBasis.core)
+                                 estimatedFeeBasis: TransferFeeBasis,
+                                 isSweep: Bool? = false) -> Transfer? {
+        return wkWalletSweeperCreateTransferForWalletSweep(sweeper.core, manager.core, self.core, estimatedFeeBasis.core, isSweep ?? false)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)
