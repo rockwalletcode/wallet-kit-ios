@@ -407,7 +407,7 @@ public final class WalletSweeper {
     }
 
     public func submit(estimatedFeeBasis: TransferFeeBasis) -> Transfer? {
-        guard let transfer = wallet.createTransfer(sweeper: self, estimatedFeeBasis: estimatedFeeBasis)
+        guard let transfer = wallet.createTransfer(sweeper: self, estimatedFeeBasis: estimatedFeeBasis, isSweep: WK_TRUE)
             else { return nil }
 
         manager.submit(transfer: transfer, key: key)
