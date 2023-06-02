@@ -200,6 +200,7 @@ public final class Wallet: Equatable {
     ///   - exchangeId: Optional needed in swaps
     ///   - secondFactorCode: Optional needed in 2FA
     ///   - secondFactorBackup: Optional needed in 2FA
+    ///   - isSweep: Boolean to distinguish send from sweep
     ///
     /// - Returns: A new transfer
     ///
@@ -209,7 +210,8 @@ public final class Wallet: Equatable {
                                 attributes: Set<TransferAttribute>? = nil,
                                 exchangeId: String? = nil,
                                 secondFactorCode: String? = nil,
-                                secondFactorBackup: String? = nil) -> Transfer? {
+                                secondFactorBackup: String? = nil,
+                                isSweep: Bool? = false) -> Transfer? {
         if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
             return nil
         }
@@ -225,7 +227,8 @@ public final class Wallet: Equatable {
                                            &coreAttributes,
                                            exchangeId,
                                            secondFactorCode,
-                                           secondFactorBackup)
+                                           secondFactorBackup,
+                                           isSweep ?? false)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)
@@ -238,7 +241,8 @@ public final class Wallet: Equatable {
                                 attributes: Set<TransferAttribute>? = nil,
                                 exchangeId: String? = nil,
                                 secondFactorCode: String? = nil,
-                                secondFactorBackup: String? = nil) -> Transfer? {
+                                secondFactorBackup: String? = nil,
+                                isSweep: Bool? = false) -> Transfer? {
         if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
             return nil
         }
@@ -254,7 +258,8 @@ public final class Wallet: Equatable {
                                            &coreAttributes,
                                            exchangeId,
                                            secondFactorCode,
-                                           secondFactorBackup)
+                                           secondFactorBackup,
+                                           isSweep ?? false)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)

@@ -186,6 +186,7 @@ public protocol SystemClient {
                             exchangeId: String?,
                             secondFactorCode: String?,
                             secondFactorBackup: String?,
+                            isSweep: Bool?,
                             completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void)
 
     // Transaction Fee
