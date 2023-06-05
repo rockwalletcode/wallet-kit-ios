@@ -211,7 +211,7 @@ public final class Wallet: Equatable {
                                 exchangeId: String? = nil,
                                 secondFactorCode: String? = nil,
                                 secondFactorBackup: String? = nil,
-                                isSweep: WKBoolean? = WK_FALSE) -> Transfer? {
+                                isSweep: Bool? = false) -> Transfer? {
         if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
             return nil
         }
@@ -228,7 +228,7 @@ public final class Wallet: Equatable {
                                            exchangeId,
                                            secondFactorCode,
                                            secondFactorBackup,
-                                           isSweep ?? WK_FALSE)
+                                           isSweep ?? false)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)
@@ -242,7 +242,7 @@ public final class Wallet: Equatable {
                                 exchangeId: String? = nil,
                                 secondFactorCode: String? = nil,
                                 secondFactorBackup: String? = nil,
-                                isSweep: WKBoolean? = WK_FALSE) -> Transfer? {
+                                isSweep: Bool? = false) -> Transfer? {
         if nil != attributes && nil != self.validateTransferAttributes(attributes!) {
             return nil
         }
@@ -259,7 +259,7 @@ public final class Wallet: Equatable {
                                            exchangeId,
                                            secondFactorCode,
                                            secondFactorBackup,
-                                           isSweep ?? WK_FALSE)
+                                           isSweep ?? false)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)
@@ -291,8 +291,8 @@ public final class Wallet: Equatable {
 
     internal func createTransfer(sweeper: WalletSweeper,
                                  estimatedFeeBasis: TransferFeeBasis,
-                                 isSweep: WKBoolean? = WK_FALSE) -> Transfer? {
-        return wkWalletSweeperCreateTransferForWalletSweep(sweeper.core, manager.core, self.core, estimatedFeeBasis.core, isSweep ?? WK_FALSE)
+                                 isSweep: Bool? = false) -> Transfer? {
+        return wkWalletSweeperCreateTransferForWalletSweep(sweeper.core, manager.core, self.core, estimatedFeeBasis.core, isSweep ?? false)
             .map { Transfer (core: $0,
                              wallet: self,
                              take: false)

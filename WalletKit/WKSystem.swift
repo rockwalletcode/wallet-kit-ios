@@ -1754,8 +1754,6 @@ extension System {
                 let secondFactorCodeString = secondFactorCode.map { asUTF8String($0) }
                 
                 let secondFactorBackupString = secondFactorBackup.map { asUTF8String($0) }
-                
-                let isSweepBoolean = isSweep == WK_TRUE ? true : false
 
                 manager.client.createTransaction (blockchainId: manager.network.uids,
                                                   transaction: data,
@@ -1763,7 +1761,7 @@ extension System {
                                                   exchangeId: exchangeIdString,
                                                   secondFactorCode: secondFactorCodeString,
                                                   secondFactorBackup: secondFactorBackupString,
-                                                  isSweep: isSweepBoolean) {
+                                                  isSweep: isSweep) {
                     (res: Result<SystemClient.TransactionIdentifier, SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(

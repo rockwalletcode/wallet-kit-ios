@@ -54,7 +54,7 @@ public final class Transfer: Equatable {
     public var secondFactorBackup: String?
     
     /// A parameter to distinguish send from sweep
-    public var isSweep: WKBoolean?
+    public var isSweep: Bool?
     
     /// The source pays the fee and sends the amount.
     public private(set) lazy var source: Address? = {
