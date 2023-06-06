@@ -44,17 +44,17 @@ public final class Address: Equatable, CustomStringConvertible {
     /// - Returns: An address or nil if `string` is invalide for `network`
     ///
     public static func create (string: String, network: Network) -> Address? {
-        var address = wkNetworkCreateAddress (network.core, string)
+        return wkNetworkCreateAddress (network.core, string)
             .map { Address (core: $0, take: false) }
-        if address == nil && network.name == "Bitcoin Cash" && (string.first == "1" || string.first == "3") {
-            address = createLegacy(string: string, network: network)
-        }
-        return address
     }
     
     public static func createLegacy (string: String, network: Network) -> Address? {
-        return wkNetworkCreateAddressLegacy (network.core, string)
-            .map { Address (core: $0, take: false) }
+        var address : Address? = nil
+        if network.name == "Bitcoin Cash" && (string.first == "1" || string.first == "3") {
+            address = wkNetworkCreateAddressLegacy (network.core, string)
+                .map { Address (core: $0, take: false) }
+        }
+        return address
     }
 
     deinit {
