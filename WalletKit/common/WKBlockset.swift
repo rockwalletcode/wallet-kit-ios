@@ -898,7 +898,6 @@ public class BlocksetSystemClient: SystemClient {
         precondition(!addresses.isEmpty, "Empty `addresses`")
         
         var json: JSON.Dict = [
-            "blockchain_id"  : blockchainId,
             "is_sweep"       : isSweep
         ]
         
