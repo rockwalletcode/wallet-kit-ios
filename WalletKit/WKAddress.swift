@@ -56,15 +56,6 @@ public final class Address: Equatable, CustomStringConvertible {
         }
         return address
     }
-    
-    public static func getLegacy (string: String, network: Network) -> Address? {
-        var address : Address? = nil
-        if network.name == "Bitcoin Cash" && (string.first == "1" || string.first == "3") {
-            address = wkNetworkGetAddressLegacy (network.core, string)
-                .map { Address (core: $0, take: false) }
-        }
-        return address
-    }
 
     deinit {
         wkAddressGive (core)
