@@ -1674,7 +1674,8 @@ extension System {
                                                 begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
                                                 endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
                                                 includeRaw: true,
-                                                includeTransfers: false) {
+                                                includeTransfers: false,
+                                                isSweep: false) {
                     (res: Result<[SystemClient.Transaction], SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(
@@ -1700,7 +1701,8 @@ extension System {
                                                 begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
                                                 endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
                                                 includeRaw: true,
-                                                includeTransfers: false) {
+                                                includeTransfers: false,
+                                                isSweep: false) {
                     (res: Result<[SystemClient.Transaction], SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(
@@ -1728,7 +1730,8 @@ extension System {
                                                 begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
                                                 endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
                                                 includeRaw: false,
-                                                includeTransfers: true) {
+                                                includeTransfers: true,
+                                                isSweep: false) {
                     (res: Result<[SystemClient.Transaction], SystemClientError>) in
                     defer { wkWalletManagerGive(cwm) }
                     res.resolve(

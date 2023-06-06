@@ -892,9 +892,16 @@ public class BlocksetSystemClient: SystemClient {
                                  includeRaw: Bool = false,
                                  includeProof: Bool = false,
                                  includeTransfers: Bool = true,
+                                 isSweep: Bool = false,
                                  maxPageSize: Int? = nil,
                                  completion: @escaping (Result<[SystemClient.Transaction], SystemClientError>) -> Void) {
         precondition(!addresses.isEmpty, "Empty `addresses`")
+        
+        var json: JSON.Dict = [
+            "blockchain_id"  : blockchainId,
+            "is_sweep"       : isSweep
+        ]
+        
         let chunkedAddresses = canonicalAddresses(addresses, blockchainId)
             .chunked(into: BlocksetSystemClient.ADDRESS_COUNT)
 
@@ -951,6 +958,7 @@ public class BlocksetSystemClient: SystemClient {
             // Make the first request.  Ideally we'll get all the transactions in one gulp
             self.bdbMakeRequest (path: "transactions",
                                  query: zip (queryKeys, queryVals),
+                                 data: json,
                                  completion: handleResult)
         }
     }
@@ -1601,6 +1609,20 @@ public class BlocksetSystemClient: SystemClient {
                      path: path,
                      query: query,
                      data: nil,
+                     httpMethod: "GET") {
+                        self.bdbHandleResult ($0, embedded: embedded, embeddedPath: path, completion: completion)
+        }
+    }
+    
+    internal func bdbMakeRequest (path: String,
+                                  query: Zip2Sequence<[String],[String]>?,
+                                  embedded: Bool = true,
+                                  data: JSON.Dict? = nil,
+                                  completion: @escaping (URL?, Result<[JSON], SystemClientError>) -> Void) {
+        makeRequest (bdbDataTaskFunc, bdbBaseURL,
+                     path: path,
+                     query: query,
+                     data: data,
                      httpMethod: "GET") {
                         self.bdbHandleResult ($0, embedded: embedded, embeddedPath: path, completion: completion)
         }

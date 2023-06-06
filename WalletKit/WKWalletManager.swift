@@ -424,7 +424,8 @@ public final class WalletSweeper {
                                begBlockNumber: 0,
                                endBlockNumber: network.height,
                                includeRaw: true,
-                               includeTransfers: false) {
+                               includeTransfers: false,
+                               isSweep: true) {
                                 (res: Result<[SystemClient.Transaction], SystemClientError>) in
                                 res.resolve(
                                     success: {
