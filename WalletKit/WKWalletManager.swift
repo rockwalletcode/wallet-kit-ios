@@ -407,7 +407,7 @@ public final class WalletSweeper {
     }
 
     public func submit(estimatedFeeBasis: TransferFeeBasis) -> Transfer? {
-        guard let transfer = wallet.createTransfer(sweeper: self, estimatedFeeBasis: estimatedFeeBasis)
+        guard let transfer = wallet.createTransfer(sweeper: self, estimatedFeeBasis: estimatedFeeBasis, isSweep: true)
             else { return nil }
 
         manager.submit(transfer: transfer, key: key)
@@ -424,7 +424,8 @@ public final class WalletSweeper {
                                begBlockNumber: 0,
                                endBlockNumber: network.height,
                                includeRaw: true,
-                               includeTransfers: false) {
+                               includeTransfers: false,
+                               isSweep: true) {
                                 (res: Result<[SystemClient.Transaction], SystemClientError>) in
                                 res.resolve(
                                     success: {

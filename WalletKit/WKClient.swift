@@ -172,6 +172,7 @@ public protocol SystemClient {
                           includeRaw: Bool,
                           includeProof: Bool,
                           includeTransfers: Bool,
+                          isSweep: Bool,
                           maxPageSize: Int?,
                           completion: @escaping (Result<[Transaction], SystemClientError>) -> Void)
     
@@ -186,6 +187,7 @@ public protocol SystemClient {
                             exchangeId: String?,
                             secondFactorCode: String?,
                             secondFactorBackup: String?,
+                            isSweep: Bool?,
                             completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void)
 
     // Transaction Fee
@@ -313,6 +315,7 @@ extension SystemClient {
                                  endBlockNumber: UInt64?,
                                  includeRaw: Bool,
                                  includeTransfers: Bool,
+                                 isSweep: Bool,
                                  completion: @escaping (Result<[Transaction], SystemClientError>) -> Void) {
         
         getTransactions(blockchainId: blockchainId,
@@ -322,6 +325,7 @@ extension SystemClient {
                         includeRaw: includeRaw,
                         includeProof: false,
                         includeTransfers: includeTransfers,
+                        isSweep: isSweep,
                         maxPageSize: nil,
                         completion: completion)
     }

@@ -892,6 +892,7 @@ public class BlocksetSystemClient: SystemClient {
                                  includeRaw: Bool = false,
                                  includeProof: Bool = false,
                                  includeTransfers: Bool = true,
+                                 isSweep: Bool = false,
                                  maxPageSize: Int? = nil,
                                  completion: @escaping (Result<[SystemClient.Transaction], SystemClientError>) -> Void) {
         precondition(!addresses.isEmpty, "Empty `addresses`")
@@ -919,6 +920,10 @@ public class BlocksetSystemClient: SystemClient {
                 results.extendedOne()
             }
         }
+        var isSweepString: String = "false"
+        if isSweep == true {
+            isSweepString = "true"
+        } 
 
         let maxPageSize = maxPageSize ?? ((includeTransfers ? 1 : 3) * BlocksetSystemClient.DEFAULT_MAX_PAGE_SIZE)
 
@@ -929,6 +934,7 @@ public class BlocksetSystemClient: SystemClient {
             "include_proof",
             "include_raw",
             "include_transfers",
+            "is_sweep",
             "include_calls",
             "max_page_size"]
             .compactMap { $0 } // Remove `nil` from {beg,end}BlockNumber
@@ -940,6 +946,7 @@ public class BlocksetSystemClient: SystemClient {
             includeProof.description,
             includeRaw.description,
             includeTransfers.description,
+            isSweepString,
             "false",
             maxPageSize.description]
             .compactMap { $0 }  // Remove `nil` from {beg,end}BlockNumber
@@ -977,6 +984,7 @@ public class BlocksetSystemClient: SystemClient {
                                    exchangeId: String?,
                                    secondFactorCode: String?,
                                    secondFactorBackup: String?,
+                                   isSweep: Bool?,
                                    completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void) {
         let data            = transaction.base64EncodedString()
         var json: JSON.Dict = [
@@ -995,6 +1003,10 @@ public class BlocksetSystemClient: SystemClient {
         
         if let secondFactorBackup = secondFactorBackup {
             json["second_factor_backup"] = secondFactorBackup
+        }
+        
+        if let isSweep = isSweep {
+            json["is_sweep"] = isSweep
         }
 
         makeRequest (bdbDataTaskFunc, bdbBaseURL,
