@@ -920,12 +920,10 @@ public class BlocksetSystemClient: SystemClient {
                 results.extendedOne()
             }
         }
-        var isSweepString: String = ""
+        var isSweepString: String = "false"
         if isSweep == true {
             isSweepString = "true"
-        } else {
-            isSweepString = "false"
-        }
+        } 
 
         let maxPageSize = maxPageSize ?? ((includeTransfers ? 1 : 3) * BlocksetSystemClient.DEFAULT_MAX_PAGE_SIZE)
 
