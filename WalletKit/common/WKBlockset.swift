@@ -896,11 +896,6 @@ public class BlocksetSystemClient: SystemClient {
                                  maxPageSize: Int? = nil,
                                  completion: @escaping (Result<[SystemClient.Transaction], SystemClientError>) -> Void) {
         precondition(!addresses.isEmpty, "Empty `addresses`")
-        
-        var json: JSON.Dict = [
-            "is_sweep"       : isSweep
-        ]
-        
         let chunkedAddresses = canonicalAddresses(addresses, blockchainId)
             .chunked(into: BlocksetSystemClient.ADDRESS_COUNT)
 
@@ -925,6 +920,12 @@ public class BlocksetSystemClient: SystemClient {
                 results.extendedOne()
             }
         }
+        var isSweepString: String = ""
+        if isSweep == true {
+            isSweepString = "true"
+        } else {
+            isSweepString = "false"
+        }
 
         let maxPageSize = maxPageSize ?? ((includeTransfers ? 1 : 3) * BlocksetSystemClient.DEFAULT_MAX_PAGE_SIZE)
 
@@ -935,6 +936,7 @@ public class BlocksetSystemClient: SystemClient {
             "include_proof",
             "include_raw",
             "include_transfers",
+            "is_sweep",
             "include_calls",
             "max_page_size"]
             .compactMap { $0 } // Remove `nil` from {beg,end}BlockNumber
@@ -946,6 +948,7 @@ public class BlocksetSystemClient: SystemClient {
             includeProof.description,
             includeRaw.description,
             includeTransfers.description,
+            isSweepString,
             "false",
             maxPageSize.description]
             .compactMap { $0 }  // Remove `nil` from {beg,end}BlockNumber
@@ -957,7 +960,6 @@ public class BlocksetSystemClient: SystemClient {
             // Make the first request.  Ideally we'll get all the transactions in one gulp
             self.bdbMakeRequest (path: "transactions",
                                  query: zip (queryKeys, queryVals),
-                                 data: json,
                                  completion: handleResult)
         }
     }
@@ -1608,20 +1610,6 @@ public class BlocksetSystemClient: SystemClient {
                      path: path,
                      query: query,
                      data: nil,
-                     httpMethod: "GET") {
-                        self.bdbHandleResult ($0, embedded: embedded, embeddedPath: path, completion: completion)
-        }
-    }
-    
-    internal func bdbMakeRequest (path: String,
-                                  query: Zip2Sequence<[String],[String]>?,
-                                  embedded: Bool = true,
-                                  data: JSON.Dict? = nil,
-                                  completion: @escaping (URL?, Result<[JSON], SystemClientError>) -> Void) {
-        makeRequest (bdbDataTaskFunc, bdbBaseURL,
-                     path: path,
-                     query: query,
-                     data: data,
                      httpMethod: "GET") {
                         self.bdbHandleResult ($0, embedded: embedded, embeddedPath: path, completion: completion)
         }

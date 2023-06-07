@@ -1712,18 +1712,6 @@ extension System {
                         },
                         failure: { (e) in
                             print ("SYS: GetTransactions: Error: \(e)")
-                            
-                            switch e {
-                                case .response(_, let pairs, _):
-                                if let result = pairs,
-                                   let error = result["error"] as? Dictionary<String, String>,
-                                   let message = error["server_message"] {
-                                    print("message: \(message)")
-                                }
-                                case .url, .submission, .noData, .jsonParse, .model, .noEntity:
-                                    print("unknown")
-                            }
-                            
                             wkClientAnnounceTransactionsReceiveAddressSyncFailure (cwm, sid, System.makeClientErrorCore (e)) })
                 }},
 
