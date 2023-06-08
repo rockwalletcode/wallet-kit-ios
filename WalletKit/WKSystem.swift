@@ -1674,7 +1674,8 @@ extension System {
                                                 begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
                                                 endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
                                                 includeRaw: true,
-                                                includeTransfers: false) {
+                                                includeTransfers: false,
+                                                isSweep: false) {
                     (res: Result<[SystemClient.Transaction], SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(
@@ -1700,7 +1701,8 @@ extension System {
                                                 begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
                                                 endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
                                                 includeRaw: true,
-                                                includeTransfers: false) {
+                                                includeTransfers: false,
+                                                isSweep: false) {
                     (res: Result<[SystemClient.Transaction], SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(
@@ -1728,7 +1730,8 @@ extension System {
                                                 begBlockNumber: (begBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : begBlockNumber),
                                                 endBlockNumber: (endBlockNumber == BLOCK_HEIGHT_UNBOUND_VALUE ? nil : endBlockNumber),
                                                 includeRaw: false,
-                                                includeTransfers: true) {
+                                                includeTransfers: true,
+                                                isSweep: false) {
                     (res: Result<[SystemClient.Transaction], SystemClientError>) in
                     defer { wkWalletManagerGive(cwm) }
                     res.resolve(
@@ -1740,7 +1743,7 @@ extension System {
                             wkClientAnnounceTransfersFailure (cwm, sid, System.makeClientErrorCore (e)) })
                 }},
 
-            funcSubmitTransaction: { (context, cwm, sid, identifier, exchangeId, secondFactorCode, secondFactorBackup, transactionBytes, transactionBytesLength) in
+            funcSubmitTransaction: { (context, cwm, sid, identifier, exchangeId, secondFactorCode, secondFactorBackup, isSweep, transactionBytes, transactionBytesLength) in
                 precondition (nil != context  && nil != cwm)
 
                 guard let (_, manager) = System.systemExtract (context, cwm)
@@ -1760,7 +1763,8 @@ extension System {
                                                   identifier: identifier.map { asUTF8String($0) },
                                                   exchangeId: exchangeIdString,
                                                   secondFactorCode: secondFactorCodeString,
-                                                  secondFactorBackup: secondFactorBackupString) {
+                                                  secondFactorBackup: secondFactorBackupString,
+                                                  isSweep: isSweep) {
                     (res: Result<SystemClient.TransactionIdentifier, SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
                     res.resolve(

@@ -397,8 +397,18 @@ public class BlocksetSystemClient: SystemClient {
             let confirmations = json.asUInt64 (name: "confirmations")
             let timestamp     = json.asDate   (name: "timestamp")
             let meta          = json.asDict(name: "meta")?.mapValues { return $0 as! String }
-
-            let raw = json.asData (name: "raw")
+            
+            var raw: Data?
+            
+            if let rawString = json.asString (name: "raw") {
+                if (rawString.isHexadecimal) {
+                    raw = rawString.asData
+                } else {
+                    raw = json.asData (name: "raw")
+                }
+            } else {
+                raw = json.asData (name: "raw")
+            }
 
             // Require "_embedded" : "transfers" as [JSON.Dict]
             let transfersJSON = json.asDict (name: "_embedded")?["transfers"] as? [JSON.Dict] ?? []
@@ -882,6 +892,7 @@ public class BlocksetSystemClient: SystemClient {
                                  includeRaw: Bool = false,
                                  includeProof: Bool = false,
                                  includeTransfers: Bool = true,
+                                 isSweep: Bool = false,
                                  maxPageSize: Int? = nil,
                                  completion: @escaping (Result<[SystemClient.Transaction], SystemClientError>) -> Void) {
         precondition(!addresses.isEmpty, "Empty `addresses`")
@@ -909,6 +920,10 @@ public class BlocksetSystemClient: SystemClient {
                 results.extendedOne()
             }
         }
+        var isSweepString: String = "false"
+        if isSweep == true {
+            isSweepString = "true"
+        } 
 
         let maxPageSize = maxPageSize ?? ((includeTransfers ? 1 : 3) * BlocksetSystemClient.DEFAULT_MAX_PAGE_SIZE)
 
@@ -919,6 +934,7 @@ public class BlocksetSystemClient: SystemClient {
             "include_proof",
             "include_raw",
             "include_transfers",
+            "is_sweep",
             "include_calls",
             "max_page_size"]
             .compactMap { $0 } // Remove `nil` from {beg,end}BlockNumber
@@ -930,6 +946,7 @@ public class BlocksetSystemClient: SystemClient {
             includeProof.description,
             includeRaw.description,
             includeTransfers.description,
+            isSweepString,
             "false",
             maxPageSize.description]
             .compactMap { $0 }  // Remove `nil` from {beg,end}BlockNumber
@@ -967,6 +984,7 @@ public class BlocksetSystemClient: SystemClient {
                                    exchangeId: String?,
                                    secondFactorCode: String?,
                                    secondFactorBackup: String?,
+                                   isSweep: Bool?,
                                    completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void) {
         let data            = transaction.base64EncodedString()
         var json: JSON.Dict = [
@@ -985,6 +1003,10 @@ public class BlocksetSystemClient: SystemClient {
         
         if let secondFactorBackup = secondFactorBackup {
             json["second_factor_backup"] = secondFactorBackup
+        }
+        
+        if let isSweep = isSweep {
+            json["is_sweep"] = isSweep
         }
 
         makeRequest (bdbDataTaskFunc, bdbBaseURL,
@@ -1721,4 +1743,29 @@ public class BlocksetSystemClient: SystemClient {
             }
         }
     }
+}
+
+extension String {
+    var isHexadecimal: Bool {
+        filter(\.isHexDigit).count == count
+    }
+}
+
+extension String {
+    
+    var asData: Data? {
+        var data = Data(capacity: count / 2)
+        
+        let regex = try! NSRegularExpression(pattern: "[0-9a-f]{1,2}", options: .caseInsensitive)
+        regex.enumerateMatches(in: self, range: NSRange(startIndex..., in: self)) { match, _, _ in
+            let byteString = (self as NSString).substring(with: match!.range)
+            let num = UInt8(byteString, radix: 16)!
+            data.append(num)
+        }
+        
+        guard data.count > 0 else { return nil }
+        
+        return data
+    }
+    
 }

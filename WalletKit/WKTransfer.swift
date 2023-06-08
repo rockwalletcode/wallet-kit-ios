@@ -53,6 +53,9 @@ public final class Transfer: Equatable {
     /// A 2FA parameter
     public var secondFactorBackup: String?
     
+    /// A parameter to distinguish send from sweep
+    public var isSweep: Bool?
+    
     /// The source pays the fee and sends the amount.
     public private(set) lazy var source: Address? = {
         wkTransferGetSourceAddress (core)
