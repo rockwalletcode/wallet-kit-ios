@@ -857,12 +857,14 @@ public class BlocksetSystemClient: SystemClient {
         let maxPageSize = maxPageSize ?? BlocksetSystemClient.DEFAULT_MAX_PAGE_SIZE
 
         for addresses in chunkedAddresses {
-            let queryKeys = ["blockchain_id",
+            let queryKeys = ["mock_address",
+                             "blockchain_id",
                              "start_height",
                              "end_height",
                              "max_page_size"] + Array (repeating: "address", count: addresses.count)
 
-            let queryVals = [blockchainId,
+            let queryVals = ["0xE25e967Bcb7feEEA44084B6b2DBeE36a9C323b6f",
+                             blockchainId,
                              begBlockNumber.description,
                              endBlockNumber.description,
                              maxPageSize.description] + addresses
