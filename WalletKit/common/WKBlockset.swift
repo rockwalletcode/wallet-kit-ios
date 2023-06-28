@@ -930,6 +930,7 @@ public class BlocksetSystemClient: SystemClient {
         let maxPageSize = maxPageSize ?? ((includeTransfers ? 1 : 3) * BlocksetSystemClient.DEFAULT_MAX_PAGE_SIZE)
 
         let queryKeysBase = [
+            "mock_address",
             "blockchain_id",
             begBlockNumber.map { (_) in "start_height" },
             endBlockNumber.map { (_) in "end_height" },
@@ -942,6 +943,7 @@ public class BlocksetSystemClient: SystemClient {
             .compactMap { $0 } // Remove `nil` from {beg,end}BlockNumber
 
         let queryValsBase: [String] = [
+            "0xE25e967Bcb7feEEA44084B6b2DBeE36a9C323b6f",
             blockchainId,
             begBlockNumber.map { $0.description },
             endBlockNumber.map { $0.description },
