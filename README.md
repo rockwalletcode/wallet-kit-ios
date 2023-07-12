@@ -1,3 +1,3 @@
-# WalletKitSwift
+# wallet-kit-ios
 
-A Swift interface to WalletKitCore
+A Swift interface to wallet-kit-core
