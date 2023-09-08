@@ -4,10 +4,4 @@
    <FileRef
       location = "group:WalletKitDemo.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:..">
-   </FileRef>
-   <FileRef
-      location = "group:../../WalletKitCore">
-   </FileRef>
 </Workspace>

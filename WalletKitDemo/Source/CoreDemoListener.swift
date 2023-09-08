@@ -207,6 +207,8 @@ class CoreDemoListener: SystemListener {
                 print ("APP: Discovered Currencies on Netowrk: \($0.name)")
                 $0.currencies.forEach { print ("APP: System:    \($0.code)") }
             }
+        case .receiveAddressSync(manager: _):
+             break
         }
     }
 

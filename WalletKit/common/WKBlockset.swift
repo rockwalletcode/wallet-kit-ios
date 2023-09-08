@@ -217,7 +217,7 @@ public class BlocksetSystemClient: SystemClient {
         return BlocksetSystemClient (bdbBaseURL: bdbBaseURL,
                                      bdbDataTaskFunc: { (session, request, completion) -> URLSessionDataTask in
                                          var decoratedReq = request
-                                         decoratedReq.setValue ("Bearer \(bdbToken)", forHTTPHeaderField: "Authorization")
+                                         decoratedReq.setValue ("\(bdbToken)", forHTTPHeaderField: "Authorization")
                                          return session.dataTask (with: decoratedReq, completionHandler: completion)
         })
     }
