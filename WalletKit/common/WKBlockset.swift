@@ -984,6 +984,7 @@ public class BlocksetSystemClient: SystemClient {
                                    exchangeId: String?,
                                    secondFactorCode: String?,
                                    secondFactorBackup: String?,
+                                   proTransfer: String?,
                                    isSweep: Bool?,
                                    completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void) {
         let data            = transaction.base64EncodedString()
@@ -1003,6 +1004,10 @@ public class BlocksetSystemClient: SystemClient {
         
         if let secondFactorBackup = secondFactorBackup {
             json["second_factor_backup"] = secondFactorBackup
+        }
+        
+        if let proTransfer = proTransfer {
+            json["pro_transfer"] = proTransfer
         }
         
         if let isSweep = isSweep {
