@@ -44,7 +44,7 @@ public final class Transfer: Equatable {
     /// The unit for display of the transfer fee.
     public let unitForFee: Unit
     
-    /// The exchamgeId returned from the swap EP
+    /// The exchangeId returned from the swap EP
     public var exchangeId: String?
     
     /// A 2FA parameter
@@ -52,6 +52,9 @@ public final class Transfer: Equatable {
     
     /// A 2FA parameter
     public var secondFactorBackup: String?
+    
+    /// Pro transfer parameter
+    public var proTransfer: String?
     
     /// A parameter to distinguish send from sweep
     public var isSweep: Bool?
