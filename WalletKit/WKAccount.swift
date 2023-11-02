@@ -11,6 +11,11 @@
 import Foundation // Data
 import WalletKitCore
 
+public struct xPubs {
+    var receiver: String
+    var change: String
+}
+
 ///
 ///
 ///
