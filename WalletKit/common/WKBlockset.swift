@@ -1306,6 +1306,12 @@ public class BlocksetSystemClient: SystemClient {
                         }
         }
     }
+    
+    public func sendXPubs(xpubs: [String: String],
+                          addresses: [String: String],
+                          completion: @escaping (Result<Void, SystemClientError>) -> Void) {
+        
+    }
 
     /// BTC - nothing
 
