@@ -698,13 +698,15 @@ public class BlocksetSystemClient: SystemClient {
         let queryKeysBase = [
             blockchainId.map { (_) in "blockchain_id" },
             "testnet",
-            "verified"]
+            "verified",
+            "wk_version"]
             .compactMap { $0 } // Remove `nil` from blockchainId
 
         let queryValsBase: [String] = [
             blockchainId,
             (!mainnet).description,
-            "true"]
+            "true",
+            "5.0.30"]
             .compactMap { $0 }  // Remove `nil` from blockchainId
 
         bdbMakeRequest (path: "currencies",

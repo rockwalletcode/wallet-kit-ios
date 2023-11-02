@@ -144,7 +144,7 @@ public final class Account {
         }
 
         var xpubBuf = [Int8](repeating: 0, count: 120)
-        wkAccountGetXPubFromSerialization (&bytes, bytes.count, wkCode, &xpubBuf, xpubBuf.count, phrase)
+        wkAccountGetXPubFromSerialization (&bytes, bytes.count, wkCode, &xpubBuf, xpubBuf.count, phrase, WK_XPUB_CHILD_RECEIVE)
         let xpubStr = String(cString: xpubBuf)
         return xpubStr
     }

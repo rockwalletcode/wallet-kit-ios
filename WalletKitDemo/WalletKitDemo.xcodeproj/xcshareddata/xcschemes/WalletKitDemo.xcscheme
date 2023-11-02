@@ -48,6 +48,16 @@
                ReferencedContainer = "container:../../WalletKitCore">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "WalletKitCoreTests"
+               BuildableName = "WalletKitCoreTests"
+               BlueprintName = "WalletKitCoreTests"
+               ReferencedContainer = "container:../../wallet-kit-core">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
