@@ -1341,8 +1341,7 @@ public class BlocksetSystemClient: SystemClient {
             let LIndex = baseURL.index(baseURL.endIndex, offsetBy: -suffixStr.count)
             
             // Removing the suffix substring
-            let modifyStr = String(baseURL[..<LIndex])
-            baseURL = modifyStr
+            baseURL = String(baseURL[..<LIndex])
         }
         
         let path = "wallet/addresses"
