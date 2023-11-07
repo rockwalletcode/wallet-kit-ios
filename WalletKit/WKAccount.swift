@@ -11,9 +11,15 @@
 import Foundation // Data
 import WalletKitCore
 
+// Helper for storing receive and change xpubs per wallet
 public struct xPubs {
-    var receiver: String
-    var change: String
+    public var receiver: String
+    public var change: String
+    
+    public init(receiver: String, change: String) {
+        self.receiver = receiver
+        self.change = change
+    }
 }
 
 ///
