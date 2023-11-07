@@ -19,7 +19,7 @@ public final class Network: CustomStringConvertible {
     let core: WKNetwork
 
     /// A unique-identifer-string
-    internal let uids: String
+    public let uids: String
 
     /// The name
     public let name: String
