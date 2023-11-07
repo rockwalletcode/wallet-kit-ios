@@ -131,7 +131,7 @@ public final class Account {
         return WK_TRUE == wkAccountValidatePaperKey (phrase, &words)
     }
     
-    public static func getXPubFromSerialization (serialization: Data, code: String, phrase: String) -> String {
+    public static func getXPubFromSerialization (serialization: Data, code: String, phrase: String, isChange: Bool) -> String {
         var bytes = [UInt8](serialization)
 
         var wkCode : WKNetworkType = WK_NETWORK_TYPE_BTC
@@ -149,7 +149,7 @@ public final class Account {
         }
 
         var xpubBuf = [Int8](repeating: 0, count: 120)
-        wkAccountGetXPubFromSerialization (&bytes, bytes.count, wkCode, &xpubBuf, xpubBuf.count, phrase, WK_XPUB_CHILD_RECEIVE)
+        wkAccountGetXPubFromSerialization (&bytes, bytes.count, wkCode, &xpubBuf, xpubBuf.count, phrase, isChange ? WK_XPUB_CHILD_CHANGE : WK_XPUB_CHILD_RECEIVE)
         let xpubStr = String(cString: xpubBuf)
         return xpubStr
     }
