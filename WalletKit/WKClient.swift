@@ -63,7 +63,9 @@ public protocol SystemClient {
 
     // pause, resume, cancel, ...
     func cancelAll ()
-
+    
+    typealias UnSigTokenizedTx = (transaction: String, paymail: String, token: String, amount: UInt32)
+    typealias UnSigTokenizedTxs = ([UnSigTokenizedTx])
     
     // Blockchain
     

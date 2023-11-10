@@ -235,8 +235,29 @@ public class BlocksetSystemClient: SystemClient {
     /// The BlocksetSystemClient Model (aka Schema-ish)
     ///
     public struct Model {
+        
+        static internal func asUnSigTokenizedTx (json :JSON) -> SystemClient.UnSigTokenizedTx? {
+            guard let transaction = json.asString(name: "transaction"),
+                  let paymail = json.asString(name: "paymail"),
+                  let token = json.asString(name: "token"),
+                  let amount = json.asUInt32(name: "amount")
+            else {return nil}
+                    
+            return (transaction: transaction, paymail: paymail, token: token, amount: amount)
+                    
+        }
+        
+        static internal func asUnSigTokenizedTxs (json: JSON) -> SystemClient.UnSigTokenizedTxs? {
+            guard let txs = json.asArray(name: "transactions")?
+                .map( {JSON(dict: $0)} )
+                .map( {asUnSigTokenizedTx (json: $0) }) as? [SystemClient.UnSigTokenizedTx]
+            else {return nil}
+            
+            return (txs)
+        }
 
         /// Blockchain
+        ///
 
         static internal func asBlockchainFee (json: JSON) -> SystemClient.BlockchainFee? {
             guard let confirmationTime = json.asUInt64(name: "estimated_confirmation_in"),
@@ -696,18 +717,18 @@ public class BlocksetSystemClient: SystemClient {
         }
 
         let queryKeysBase = [
-            blockchainId.map { (_) in "blockchain_id" },
-            "testnet",
-            "verified"]
-            .compactMap { $0 } // Remove `nil` from blockchainId
-
-        let queryValsBase: [String] = [
-            blockchainId,
-            (!mainnet).description,
-            "true"]
-            .compactMap { $0 }  // Remove `nil` from blockchainId
-
-        bdbMakeRequest (path: "currencies",
+             blockchainId.map { (_) in "blockchain_id" },
+             "testnet",
+             "verified",
+             "wk_version"]
+             .compactMap { $0 } // Remove `nil` from blockchainId
+         let queryValsBase: [String] = [
+             blockchainId,
+             (!mainnet).description,
+             "true",
+             "5.0.30"]
+             .compactMap { $0 }  // Remove `nil` from blockchainId
+         bdbMakeRequest (path: "currencies",
                         query: zip (queryKeysBase, queryValsBase),
                         completion: handleResult)
     }
@@ -1252,7 +1273,7 @@ public class BlocksetSystemClient: SystemClient {
                      httpMethod: "GET") {
                         (res: Result<JSON.Dict, SystemClientError>) in
                         self.bdbHandleResult (res, embeddedPath: "accounts") {
-                            (ignore, res: Result<[BlocksetSystemClient.JSON], SystemClientError>) in
+                            (ignore, res: Result<[JSON], SystemClientError>) in
                             completion (res.flatMap {
                                 BlocksetSystemClient.getManyExpected(data: $0, transform: Model.asHederaAccount)
                             })
@@ -1306,6 +1327,50 @@ public class BlocksetSystemClient: SystemClient {
                         }
         }
     }
+    
+    public func createTokenized (amount: UInt64,
+                                 token: String?,
+                                 paymail: String,
+                                 tx:      String,
+                                 ancestors: [String],
+                                 completion: @escaping (Result<Void, SystemClientError>) -> Void) {
+        
+        let json: JSON.Dict = [
+            "amount"            : amount,
+            "paymail"           : paymail,
+            "transaction": tx,
+            "ancestors" : ancestors
+        ]
+        
+        makeRequest (bdbDataTaskFunc, bdbBaseURL,
+                     path: "tokenized/transactions",
+                     data: json,
+                     httpMethod: "POST",
+                     deserializer: { (data: Data?) in
+            return (nil == data || 0 == data!.count
+                    ? Result.success (())
+                    : Result.failure (SystemClientError.model ("Unexpected Data on POST"))) },
+                     completion: completion)
+    }
+    
+    public func getUnsignedTokenized (completion: @escaping (Result<UnSigTokenizedTxs, SystemClientError>) -> Void) {
+        
+        
+        makeRequest (bdbDataTaskFunc, bdbBaseURL,
+                     path: "tokenized/transactions",
+                     httpMethod: "GET") {
+            self.bdbHandleResult ($0, embedded: false, embeddedPath: "") {
+                (more: URL?, res: Result<[JSON], SystemClientError>) in
+                precondition(nil == more)
+                completion (res.flatMap {
+                    BlocksetSystemClient.getOneExpected (id: "GET tokenized/transactions",
+                                                         data: $0,
+                                                         transform: Model.asUnSigTokenizedTxs)
+                })
+            }
+        }
+    }
+    
 
     /// BTC - nothing
 
@@ -1321,95 +1386,7 @@ public class BlocksetSystemClient: SystemClient {
         return rid
     }
 
-     static internal let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        return formatter
-    }()
-
-    internal struct JSON {
-        typealias Dict = [String:Any]
-
-        let dict: Dict
-
-        init (dict: Dict) {
-            self.dict = dict
-        }
-
-        internal func asString (name: String) -> String? {
-            return dict[name] as? String
-        }
-
-        internal func asBool (name: String) -> Bool? {
-            return dict[name] as? Bool
-        }
-
-        internal func asInt64 (name: String) -> Int64? {
-            return (dict[name] as? NSNumber)
-                .flatMap { Int64 (exactly: $0)}
-        }
-
-        internal func asUInt64 (name: String) -> UInt64? {
-            return (dict[name] as? NSNumber)
-                .flatMap { UInt64 (exactly: $0)}
-        }
-
-        internal func asUInt32 (name: String) -> UInt32? {
-            return (dict[name] as? NSNumber)
-                .flatMap { UInt32 (exactly: $0)}
-        }
-
-        internal func asUInt8 (name: String) -> UInt8? {
-            return (dict[name] as? NSNumber)
-                .flatMap { UInt8 (exactly: $0)}
-        }
-
-        internal func asDate (name: String) -> Date? {
-            return (dict[name] as? String)
-                .flatMap { dateFormatter.date (from: $0) }
-        }
-
-        internal func asData (name: String) -> Data? {
-            return (dict[name] as? String)
-                .flatMap { Data (base64Encoded: $0)! }
-        }
-
-        internal func asArray (name: String) -> [Dict]? {
-            return dict[name] as? [Dict]
-        }
-
-        internal func asDict (name: String) -> Dict? {
-            return dict[name] as? Dict
-        }
-
-        internal func asStringArray (name: String) -> [String]? {
-            return dict[name] as? [String]
-        }
-
-        internal func asJSON (name: String) -> JSON? {
-            return asDict(name: name).map { JSON (dict: $0) }
-        }
-    }
-
-    private static func deserializeAsJSON<T> (_ data: Data?) -> Result<T, SystemClientError> {
-        guard let data = data else {
-            return Result.failure (SystemClientError.noData);
-        }
-
-        do {
-            guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? T
-                else {
-                    print ("SYS: BDB:API: ERROR: JSON.Dict: '\(data.map { String(format: "%c", $0) }.joined())'")
-                    return Result.failure(SystemClientError.jsonParse(nil)) }
-
-            return Result.success (json)
-        }
-        catch let jsonError as NSError {
-            print ("SYS: BDB:API: ERROR: JSON.Error: '\(data.map { String(format: "%c", $0) }.joined())'")
-            return Result.failure (SystemClientError.jsonParse (jsonError))
-        }
-    }
-
+    
     private func sendRequest<T> (_ request: URLRequest,
                                  _ session: URLSession? = nil,
                                  _ dataTaskFunc: DataTaskFunc,
@@ -1506,7 +1483,7 @@ public class BlocksetSystemClient: SystemClient {
                                   url: URL,
                                   httpMethod: String = "POST",
                                   session: URLSession? = nil,
-                                  deserializer: @escaping (_ data: Data?) -> Result<T, SystemClientError> = deserializeAsJSON,
+                                  deserializer: @escaping (_ data: Data?) -> Result<T, SystemClientError> = JSON.deserializeAsJSON,
                                   completion: @escaping (Result<T, SystemClientError>) -> Void) {
         print ("SYS: BDB: Request: \(url.absoluteString): Method: \(httpMethod): Data: []")
         var request = URLRequest (url: url)
@@ -1523,7 +1500,7 @@ public class BlocksetSystemClient: SystemClient {
                                   data: JSON.Dict? = nil,
                                   httpMethod: String = "POST",
                                   session: URLSession? = nil,
-                                  deserializer: @escaping (_ data: Data?) -> Result<T, SystemClientError> = deserializeAsJSON,
+                                  deserializer: @escaping (_ data: Data?) -> Result<T, SystemClientError> = JSON.deserializeAsJSON,
                                   completion: @escaping (Result<T, SystemClientError>) -> Void) {
         guard var urlBuilder = URLComponents (string: baseURL)
             else { completion (Result.failure(SystemClientError.url("URLComponents"))); return }
