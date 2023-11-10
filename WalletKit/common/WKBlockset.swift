@@ -717,18 +717,20 @@ public class BlocksetSystemClient: SystemClient {
         }
 
         let queryKeysBase = [
-             blockchainId.map { (_) in "blockchain_id" },
-             "testnet",
-             "verified",
-             "wk_version"]
-             .compactMap { $0 } // Remove `nil` from blockchainId
-         let queryValsBase: [String] = [
-             blockchainId,
-             (!mainnet).description,
-             "true",
-             "5.0.30"]
-             .compactMap { $0 }  // Remove `nil` from blockchainId
-         bdbMakeRequest (path: "currencies",
+            blockchainId.map { (_) in "blockchain_id" },
+            "testnet",
+            "verified",
+            "wk_version"]
+            .compactMap { $0 } // Remove `nil` from blockchainId
+
+        let queryValsBase: [String] = [
+            blockchainId,
+            (!mainnet).description,
+            "true",
+            "5.0.30"]
+            .compactMap { $0 }  // Remove `nil` from blockchainId
+
+        bdbMakeRequest (path: "currencies",
                         query: zip (queryKeysBase, queryValsBase),
                         completion: handleResult)
     }
@@ -1371,6 +1373,56 @@ public class BlocksetSystemClient: SystemClient {
         }
     }
     
+    public func sendXPubs(xpubs: [String: xPubs],
+                          addresses: [String: String],
+                          completion: @escaping (Result<Void, SystemClientError>) -> Void) {
+        
+        
+        var json : JSON.Dict = [:]
+        
+        if(!xpubs.isEmpty) {
+            var jsonxpubs: JSON.Dict = [:]
+            for (_, xpub) in xpubs.enumerated() {
+                jsonxpubs[xpub.key] = [
+                    "receiver": xpub.value.receiver,
+                    "change": xpub.value.change
+                ]
+            }
+            json["xpubs"] = jsonxpubs
+        }
+        
+        if(!addresses.isEmpty) {
+            var jaddresses: JSON.Dict = [:]
+            for(_, address) in addresses.enumerated(){
+                jaddresses[address.key] = address.value
+            }
+            json["addresses"] = jaddresses
+        }
+        
+        var baseURL = bdbBaseURL
+        let suffixStr = "/blocksatoshi"
+        
+        if baseURL.hasSuffix(suffixStr) {
+            // Find the index to stop deleting at
+            let LIndex = baseURL.index(baseURL.endIndex, offsetBy: -suffixStr.count)
+            
+            // Removing the suffix substring
+            baseURL = String(baseURL[..<LIndex])
+        }
+        
+        let path = "wallet/addresses"
+        makeRequest (bdbDataTaskFunc, baseURL,
+                     path: path,
+                     query: nil,
+                     data: json,
+                     httpMethod: "POST",
+                     deserializer: { (data: Data?) in
+                        return (nil == data || 0 == data!.count
+                            ? Result.success (())
+                            : Result.failure (SystemClientError.model ("Unexpected Data on POST"))) },
+                     completion: completion)
+        
+    }
 
     /// BTC - nothing
 

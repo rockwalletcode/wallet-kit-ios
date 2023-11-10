@@ -45,7 +45,7 @@ UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     }
     var isBitCurrency: Bool {
         switch wallet.manager.network.type {
-        case .btc, .bch: return true
+            case .btc, .bch, .bsv: return true
         default: return false
         }
     }
