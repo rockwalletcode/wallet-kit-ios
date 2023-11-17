@@ -1320,7 +1320,7 @@ public class BlocksetSystemClient: SystemClient {
             var jsonxpubs: JSON.Dict = [:]
             for (_, xpub) in xpubs.enumerated() {
                 jsonxpubs[xpub.key] = [
-                    "receiver": xpub.value.receiver,
+                    "receive": xpub.value.receiver,
                     "change": xpub.value.change
                 ]
             }
