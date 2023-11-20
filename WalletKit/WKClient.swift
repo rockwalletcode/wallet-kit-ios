@@ -303,10 +303,6 @@ public protocol SystemClient {
     func createHederaAccount (blockchainId: String,
                               publicKey: String,
                               completion: @escaping (Result<[HederaAccount], SystemClientError>) -> Void)
-    
-    func sendXPubs(xpubs: [String: xPubs],
-                          addresses: [String: String],
-                          completion: @escaping (Result<Void, SystemClientError>) -> Void)
 }
 
 extension SystemClient {
