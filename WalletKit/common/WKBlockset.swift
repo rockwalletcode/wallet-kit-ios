@@ -660,6 +660,15 @@ public class BlocksetSystemClient: SystemClient {
                     balance: balance,
                     deleted: "active" != status)
         }
+        
+        static internal func asTokenizedNegotiationThreadId (json: JSON) -> String? {
+            guard let id = json.asString(name: "threadId")
+            else {
+                return nil
+            }
+            
+            return id
+        }
 
     } // End of Model
 
@@ -1333,33 +1342,50 @@ public class BlocksetSystemClient: SystemClient {
     public func createTokenized (amount: UInt64,
                                  token: String?,
                                  paymail: String,
-                                 tx:      String,
+                                 tx:      Data,
                                  ancestors: [String],
-                                 completion: @escaping (Result<Void, SystemClientError>) -> Void) {
+                                 completion: @escaping (Result<String, SystemClientError>) -> Void) {
         
         let json: JSON.Dict = [
             "amount"            : amount,
             "paymail"           : paymail,
-            "transaction": tx,
+            "transaction": tx.base64EncodedString(),
             "ancestors" : ancestors
         ]
         
+
+        
         makeRequest (bdbDataTaskFunc, bdbBaseURL,
-                     path: "tokenized/transactions",
+                     path: "tokenized/transaction",
                      data: json,
-                     httpMethod: "POST",
-                     deserializer: { (data: Data?) in
-            return (nil == data || 0 == data!.count
-                    ? Result.success (())
-                    : Result.failure (SystemClientError.model ("Unexpected Data on POST"))) },
-                     completion: completion)
+                     httpMethod: "POST") {
+            self.bdbHandleResult ($0, embedded: false, embeddedPath: "") {
+                (more: URL?, res: Result<[JSON], SystemClientError>) in
+                precondition (nil == more)
+                completion (res.flatMap {
+                    BlocksetSystemClient.getOneExpected (id: "POST /tokenized/transaction",
+                                                         data: $0,
+                                                         transform: Model.asTokenizedNegotiationThreadId)
+                })
+            }
+        }
     }
     
     public func getUnsignedTokenized (completion: @escaping (Result<UnSigTokenizedTxs, SystemClientError>) -> Void) {
         
+        var baseURL = bdbBaseURL
+        let suffixStr = "/blocksatoshi"
         
-        makeRequest (bdbDataTaskFunc, bdbBaseURL,
-                     path: "tokenized/transactions",
+        if baseURL.hasSuffix(suffixStr) {
+            // Find the index to stop deleting at
+            let LIndex = baseURL.index(baseURL.endIndex, offsetBy: -suffixStr.count)
+            
+            // Removing the suffix substring
+            baseURL = String(baseURL[..<LIndex])
+        }
+        
+        makeRequest (bdbDataTaskFunc, baseURL,
+                     path: "paymail/transactions/signable",
                      httpMethod: "GET") {
             self.bdbHandleResult ($0, embedded: false, embeddedPath: "") {
                 (more: URL?, res: Result<[JSON], SystemClientError>) in

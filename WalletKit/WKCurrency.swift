@@ -14,6 +14,14 @@ import WalletKitCore
 /// A currency is a medium for exchange.
 ///
 public final class Currency: Hashable {
+    
+    public enum TokenType: String {
+        case native
+        case erc20
+        case tokenized
+        case stas
+        case unknown
+    }
 
     internal let core: WKCurrency
 

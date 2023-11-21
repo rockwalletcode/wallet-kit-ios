@@ -8,6 +8,7 @@
 //  See the LICENSE file at the project root for license information.
 //  See the CONTRIBUTORS file at the project root for a list of contributors.
 //
+import UIKit
 import WalletKitCore
 
 
@@ -253,21 +254,64 @@ public final class Wallet: Equatable {
         let coreAttributesCount = attributes?.count ?? 0
         var coreAttributes: [WKTransferAttribute?] = attributes?.map { $0.core } ?? []
         
-        return wkWalletCreateTransferFromScript (core,
-                                           outputScript,
-                                           amount.core,
-                                           estimatedFeeBasis.core,
-                                           coreAttributesCount,
-                                           &coreAttributes,
-                                           exchangeId,
-                                           secondFactorCode,
-                                           secondFactorBackup,
-                                           proTransfer,
-                                           isSweep ?? false)
-            .map { Transfer (core: $0,
-                             wallet: self,
-                             take: false)
+        let transfer = wkWalletCreateTransferFromScript (core,
+                                                        outputScript,
+                                                        amount.core,
+                                                        estimatedFeeBasis.core,
+                                                        coreAttributesCount,
+                                                        &coreAttributes,
+                                                        exchangeId,
+                                                        secondFactorCode,
+                                                        secondFactorBackup,
+                                                        proTransfer,
+                                                        isSweep ?? false)
+                         .map { Transfer (core: $0,
+                                          wallet: self,
+                                          take: false)
+                         }
+        if(currency.type.lowercased() == Currency.TokenType.tokenized.rawValue) {
+            
+            let ancestors = (transfer?.ancestors)!;
+            var overflow: WKBoolean = WK_FALSE
+            let value = wkAmountGetIntegerRaw (amount.core, &overflow)
+            var sizetx = 0;
+            var threadId = "";
+            var gotTx = false
+            var unsigTx = SystemClient.UnSigTokenizedTxs()
+            
+            let serializedTx = Data (bytes: wkTransferSerializeForFeeEstimation(transfer?.core, manager.network.core, &sizetx)!,
+                                     count: sizetx)
+            
+            system.client.createTokenized(amount: value, token: nil, paymail: outputScript, tx: serializedTx, ancestors: Array(ancestors)) {
+                (res: Result<String, SystemClientError>) in
+                res.resolve(success: {(id) in threadId = id
+                                              print ("SYS: Negotiation send")
+                                              self.system.client.getUnsignedTokenized() {
+                                                  (res: Result<SystemClient.UnSigTokenizedTxs, SystemClientError>) in
+                                                        res.resolve(success: { (uTx) in
+                                                                                unsigTx = uTx
+                                                                                gotTx = unsigTx.count > 0 ? true : false },
+                                                                    failure: {(e) in
+                                                                              print ("SYS: Negotiation failed: Error: \(e)")}) }
+                                     },
+                            failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")}
+                            )
             }
+            
+            
+            
+            
+            
+            
+            //need to wait to get back negotiated tx
+            
+            repeat {
+                sleep(1)
+            } while !gotTx
+            
+        }
+        
+        return transfer
     }
 
     public func createTransfer (outputs: [TransferOutput],

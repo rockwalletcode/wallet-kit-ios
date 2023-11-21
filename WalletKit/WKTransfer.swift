@@ -154,6 +154,16 @@ public final class Transfer: Equatable {
         // types and thus, even if the Set is immutable, it's elements won't be.
         return Set (coreAttributes.map { TransferAttribute (core: wkTransferAttributeCopy($0), take: false) })
     }()
+    
+    public private(set) lazy var ancestors: Set<String> = {
+        
+        let ancestorList = (0..<wkTransferAncestorsCount(core)).map {
+            var ancestor = [CChar](repeating: 0, count: 65)
+            wkTransferGetAncestorsAt(&ancestor, Int32(ancestor.count), core, $0)
+            return ancestor
+        }
+        return Set (ancestorList.map{asUTF8String($0)})
+    }()
 
     internal init (core: WKTransfer,
                    wallet: Wallet,
