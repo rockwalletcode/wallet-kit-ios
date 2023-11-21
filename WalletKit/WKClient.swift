@@ -305,7 +305,7 @@ public protocol SystemClient {
     func createHederaAccount (blockchainId: String,
                               publicKey: String,
                               completion: @escaping (Result<[HederaAccount], SystemClientError>) -> Void)
-    
+
     func getUnsignedTokenized (completion: @escaping (Result<UnSigTokenizedTxs, SystemClientError>) -> Void)
     
     func createTokenized (amount: UInt64,
@@ -314,10 +314,7 @@ public protocol SystemClient {
                                  tx:      Data,
                                  ancestors: [String],
                                  completion: @escaping (Result<String, SystemClientError>) -> Void)
-    
-    func sendXPubs(xpubs: [String: xPubs],
-                          addresses: [String: String],
-                          completion: @escaping (Result<Void, SystemClientError>) -> Void)
+
 }
 
 extension SystemClient {
