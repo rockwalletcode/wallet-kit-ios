@@ -8,6 +8,7 @@
 //  See the LICENSE file at the project root for license information.
 //  See the CONTRIBUTORS file at the project root for a list of contributors.
 //
+
 import UIKit
 import WalletKitCore
 
@@ -238,6 +239,21 @@ public final class Wallet: Equatable {
             }
     }
     
+    func dataWithHexString(hex: String) -> Data {
+        var hex = hex
+        var data = Data()
+        while(hex.count > 0) {
+            let subIndex = hex.index(hex.startIndex, offsetBy: 2)
+            let c = String(hex[..<subIndex])
+            hex = String(hex[subIndex...])
+            var ch: UInt32 = 0
+            Scanner(string: c).scanHexInt32(&ch)
+            var char = UInt8(ch)
+            data.append(&char, count: 1)
+        }
+        return data
+    }
+    
     public func createTransfer (outputScript: String,
                                 amount: Amount,
                                 estimatedFeeBasis: TransferFeeBasis,
@@ -254,7 +270,7 @@ public final class Wallet: Equatable {
         let coreAttributesCount = attributes?.count ?? 0
         var coreAttributes: [WKTransferAttribute?] = attributes?.map { $0.core } ?? []
         
-        let transfer = wkWalletCreateTransferFromScript (core,
+        var transfer = wkWalletCreateTransferFromScript (core,
                                                         outputScript,
                                                         amount.core,
                                                         estimatedFeeBasis.core,
@@ -277,7 +293,7 @@ public final class Wallet: Equatable {
             var sizetx = 0;
             var threadId = "";
             var gotTx = false
-            var unsigTx = SystemClient.UnSigTokenizedTxs()
+            var unsigTx = SystemClient.UnSigTokenizedTx("", "",0)
             
             let serializedTx = Data (bytes: wkTransferSerializeForFeeEstimation(transfer?.core, manager.network.core, &sizetx)!,
                                      count: sizetx)
@@ -286,28 +302,31 @@ public final class Wallet: Equatable {
                 (res: Result<String, SystemClientError>) in
                 res.resolve(success: {(id) in threadId = id
                                               print ("SYS: Negotiation send")
-                                              self.system.client.getUnsignedTokenized() {
-                                                  (res: Result<SystemClient.UnSigTokenizedTxs, SystemClientError>) in
+                                              self.system.client.getUnsignedTokenized(threadId: threadId) {
+                                                  (res: Result<SystemClient.UnSigTokenizedTx, SystemClientError>) in
                                                         res.resolve(success: { (uTx) in
                                                                                 unsigTx = uTx
-                                                                                gotTx = unsigTx.count > 0 ? true : false },
-                                                                    failure: {(e) in
-                                                                              print ("SYS: Negotiation failed: Error: \(e)")}) }
+                                                                                gotTx = true },
+                                                                    failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")
+                                                                                     gotTx=true
+                                                                                     transfer=nil}) }
                                      },
-                            failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")}
+                            failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")
+                                             gotTx=true
+                                             transfer = nil         }
                             )
             }
             
-            
-            
-            
-            
-            
             //need to wait to get back negotiated tx
-            
             repeat {
                 sleep(1)
             } while !gotTx
+            
+            let byteNewTx = [UInt8](CoreCoder.hex.decode(string: unsigTx.transaction)! ) 
+            transfer = wkWalletUpdateTransfer(core, transfer?.core, byteNewTx, byteNewTx.count).map { Transfer (core: $0,
+                                                                                                        wallet: self,
+                                                                                                        take: false)
+                                                                                       }
             
         }
         

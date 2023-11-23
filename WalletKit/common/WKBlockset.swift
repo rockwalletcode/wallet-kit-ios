@@ -236,24 +236,22 @@ public class BlocksetSystemClient: SystemClient {
     ///
     public struct Model {
         
-        static internal func asUnSigTokenizedTx (json :JSON) -> SystemClient.UnSigTokenizedTx? {
-            guard let transaction = json.asString(name: "transaction"),
-                  let paymail = json.asString(name: "paymail"),
-                  let token = json.asString(name: "token"),
-                  let amount = json.asUInt32(name: "amount")
-            else {return nil}
-                    
-            return (transaction: transaction, paymail: paymail, token: token, amount: amount)
-                    
-        }
-        
-        static internal func asUnSigTokenizedTxs (json: JSON) -> SystemClient.UnSigTokenizedTxs? {
-            guard let txs = json.asArray(name: "transactions")?
-                .map( {JSON(dict: $0)} )
-                .map( {asUnSigTokenizedTx (json: $0) }) as? [SystemClient.UnSigTokenizedTx]
+        static internal func asExpandedTx (json :JSON) -> String? {
+            guard let transaction = json.asString(name: "tx")
             else {return nil}
             
-            return (txs)
+            return transaction
+            
+        }
+        
+        static internal func asUnSigTokenizedTx (json :JSON) -> SystemClient.UnSigTokenizedTx? {
+            guard let amount = json.asUInt32(name: "amount"),
+                  let transaction = json.asDict(name: "expandedTx")?["tx"] as? String,
+                  let recipient = json.asString(name: "recipient")
+            else {return nil}
+                    
+            return (transaction: transaction, paymail: recipient, amount: amount)
+                    
         }
 
         /// Blockchain
@@ -1371,7 +1369,8 @@ public class BlocksetSystemClient: SystemClient {
         }
     }
     
-    public func getUnsignedTokenized (completion: @escaping (Result<UnSigTokenizedTxs, SystemClientError>) -> Void) {
+    public func getUnsignedTokenized (threadId: String,
+                                      completion: @escaping (Result<UnSigTokenizedTx, SystemClientError>) -> Void) {
         
         var baseURL = bdbBaseURL
         let suffixStr = "/blocksatoshi"
@@ -1385,15 +1384,15 @@ public class BlocksetSystemClient: SystemClient {
         }
         
         makeRequest (bdbDataTaskFunc, baseURL,
-                     path: "paymail/transactions/signable",
+                     path: "paymail/transactions/signable/\(threadId)",
                      httpMethod: "GET") {
             self.bdbHandleResult ($0, embedded: false, embeddedPath: "") {
                 (more: URL?, res: Result<[JSON], SystemClientError>) in
                 precondition(nil == more)
                 completion (res.flatMap {
-                    BlocksetSystemClient.getOneExpected (id: "GET tokenized/transactions",
+                    BlocksetSystemClient.getOneExpected (id: "GET paymail/transactions/signable",
                                                          data: $0,
-                                                         transform: Model.asUnSigTokenizedTxs)
+                                                         transform: Model.asUnSigTokenizedTx)
                 })
             }
         }

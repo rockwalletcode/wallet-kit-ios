@@ -64,8 +64,7 @@ public protocol SystemClient {
     // pause, resume, cancel, ...
     func cancelAll ()
     
-    typealias UnSigTokenizedTx = (transaction: String, paymail: String, token: String, amount: UInt32)
-    typealias UnSigTokenizedTxs = ([UnSigTokenizedTx])
+    typealias UnSigTokenizedTx = (transaction: String, paymail: String, amount: UInt32)
     
     // Blockchain
     
@@ -306,7 +305,8 @@ public protocol SystemClient {
                               publicKey: String,
                               completion: @escaping (Result<[HederaAccount], SystemClientError>) -> Void)
 
-    func getUnsignedTokenized (completion: @escaping (Result<UnSigTokenizedTxs, SystemClientError>) -> Void)
+    func getUnsignedTokenized (threadId: String,
+                               completion: @escaping (Result<UnSigTokenizedTx, SystemClientError>) -> Void)
     
     func createTokenized (amount: UInt64,
                                  token: String?,
