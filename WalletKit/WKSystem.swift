@@ -1785,7 +1785,7 @@ extension System {
                                    let message = error["server_message"] {
                                     if message == "EMAIL" {
                                         errorType = WK_TRANSFER_SUBMIT_ERROR_EMAIL
-                                    } else if message == "AUTHENTICATOR" {
+                                    } else if message == "Invalid 2FA code" {
                                         errorType = WK_TRANSFER_SUBMIT_ERROR_AUTHENTICATOR
                                     }
                                 }
