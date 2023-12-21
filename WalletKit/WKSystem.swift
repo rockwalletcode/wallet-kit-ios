@@ -1781,17 +1781,12 @@ extension System {
                             switch e {
                                 case .response(_, let pairs, _):
                                 if let result = pairs,
-                                   let error = result["error"] as? Dictionary<String, String>,
-                                   let message = error["server_message"] {
-                                    if message == "EMAIL" {
-                                        errorType = WK_TRANSFER_SUBMIT_ERROR_EMAIL
-                                    } else if message == "AUTHENTICATOR" {
+                                    let error = result["error_type"] as? String, error == "Invalid 2FA" {
                                         errorType = WK_TRANSFER_SUBMIT_ERROR_AUTHENTICATOR
                                     }
-                                }
                                 case .url, .submission, .noData, .jsonParse, .model, .noEntity:
                                     errorType = WK_TRANSFER_SUBMIT_ERROR_UNKNOWN
-                            }
+                            }                            
                             
                             wkClientAnnounceSubmitTransferFailure (cwm, sid, System.makeClientErrorCore (e), errorType)})
                 }},
