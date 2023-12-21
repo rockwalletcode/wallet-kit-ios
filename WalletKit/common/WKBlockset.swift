@@ -1015,6 +1015,7 @@ public class BlocksetSystemClient: SystemClient {
                                    secondFactorCode: String?,
                                    secondFactorBackup: String?,
                                    proTransfer: String?,
+                                   threadID: String?,
                                    isSweep: Bool?,
                                    completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void) {
         let data            = transaction.base64EncodedString()
@@ -1038,6 +1039,10 @@ public class BlocksetSystemClient: SystemClient {
         
         if let proTransfer = proTransfer {
             json["pro_transfer"] = proTransfer
+        }
+        
+        if let threadID = threadID {
+            json["thread_id"] = threadID;
         }
         
         if let isSweep = isSweep {

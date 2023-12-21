@@ -287,12 +287,12 @@ public final class Wallet: Equatable {
                          }
         if(currency.type.lowercased() == Currency.TokenType.tokenized.rawValue) {
             
-            let ancestors = (transfer?.ancestors)!;
+            let ancestors = (transfer?.ancestors)!
             var overflow: WKBoolean = WK_FALSE
             let value = wkAmountGetIntegerRaw (amount.core, &overflow)
-            var sizetx = 0;
-            var threadId = "";
-            var gotTx = false
+            var sizetx = 0
+            var threadId = ""
+            var gotResponse = false
             var unsigTx = SystemClient.UnSigTokenizedTx("", "",0)
             
             let serializedTx = Data (bytes: wkTransferSerializeForFeeEstimation(transfer?.core, manager.network.core, &sizetx)!,
@@ -301,29 +301,46 @@ public final class Wallet: Equatable {
             system.client.createTokenized(amount: value, token: nil, paymail: outputScript, tx: serializedTx, ancestors: Array(ancestors)) {
                 (res: Result<String, SystemClientError>) in
                 res.resolve(success: {(id) in threadId = id
+                                              gotResponse = true
                                               print ("SYS: Negotiation send")
-                                              self.system.client.getUnsignedTokenized(threadId: threadId) {
-                                                  (res: Result<SystemClient.UnSigTokenizedTx, SystemClientError>) in
-                                                        res.resolve(success: { (uTx) in
-                                                                                unsigTx = uTx
-                                                                                gotTx = true },
-                                                                    failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")
-                                                                                     gotTx=true
-                                                                                     transfer=nil}) }
                                      },
                             failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")
-                                             gotTx=true
+                                             gotResponse=true
                                              transfer = nil         }
                             )
             }
             
             //need to wait to get back negotiated tx
+            var count = 10
             repeat {
                 sleep(1)
-            } while !gotTx
+                count -= 1
+            } while (!gotResponse && count >= 0)
+            
+            if threadId == "" {
+                return nil
+            }
+            
+            self.system.client.getUnsignedTokenized(threadId: threadId) {
+                (res: Result<SystemClient.UnSigTokenizedTx, SystemClientError>) in
+                      res.resolve(success: { (uTx) in
+                                              unsigTx = uTx
+                                              gotResponse = true },
+                                  failure: {(e) in print ("SYS: Negotiation failed: Error: \(e)")
+                                                   gotResponse = true
+                                                  }) }
+            count = 10
+            repeat {
+                sleep(1)
+                count -= 1
+            } while (!gotResponse && count >= 0)
+            
+            if(unsigTx.transaction == "") {
+                return nil
+            }
             
             let byteNewTx = [UInt8](CoreCoder.hex.decode(string: unsigTx.transaction)! ) 
-            transfer = wkWalletUpdateTransfer(core, transfer?.core, byteNewTx, byteNewTx.count).map { Transfer (core: $0,
+            transfer = wkWalletUpdateTransfer(core, transfer?.core, byteNewTx, threadId, byteNewTx.count).map { Transfer (core: $0,
                                                                                                         wallet: self,
                                                                                                         take: false)
                                                                                        }

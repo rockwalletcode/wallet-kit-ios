@@ -189,6 +189,7 @@ public protocol SystemClient {
                             secondFactorCode: String?,
                             secondFactorBackup: String?,
                             proTransfer: String?,
+                            threadID: String?,
                             isSweep: Bool?,
                             completion: @escaping (Result<TransactionIdentifier, SystemClientError>) -> Void)
 

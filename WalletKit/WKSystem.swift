@@ -1743,7 +1743,7 @@ extension System {
                             wkClientAnnounceTransfersFailure (cwm, sid, System.makeClientErrorCore (e)) })
                 }},
 
-            funcSubmitTransaction: { (context, cwm, sid, identifier, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep, transactionBytes, transactionBytesLength) in
+            funcSubmitTransaction: { (context, cwm, sid, identifier, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, threadID, isSweep, transactionBytes, transactionBytesLength) in
                 precondition (nil != context  && nil != cwm)
 
                 guard let (_, manager) = System.systemExtract (context, cwm)
@@ -1760,6 +1760,8 @@ extension System {
 
                 let proTransferString = proTransfer.map { asUTF8String($0) }
                 
+                let threadIDString = threadID.map{ asUTF8String($0) }
+                
                 manager.client.createTransaction (blockchainId: manager.network.uids,
                                                   transaction: data,
                                                   identifier: identifier.map { asUTF8String($0) },
@@ -1767,6 +1769,7 @@ extension System {
                                                   secondFactorCode: secondFactorCodeString,
                                                   secondFactorBackup: secondFactorBackupString,
                                                   proTransfer: proTransferString,
+                                                  threadID: threadIDString,
                                                   isSweep: isSweep) {
                     (res: Result<SystemClient.TransactionIdentifier, SystemClientError>) in
                     defer { wkWalletManagerGive (cwm!) }
