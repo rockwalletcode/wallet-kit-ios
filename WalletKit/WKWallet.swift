@@ -285,7 +285,8 @@ public final class Wallet: Equatable {
                                           wallet: self,
                                           take: false)
                          }
-        if(currency.type.lowercased() == Currency.TokenType.tokenized.rawValue) {
+        if(currency.type.lowercased() == Currency.TokenType.tokenized.rawValue &&
+          transfer != nil) {
             
             let ancestors = (transfer?.ancestors)!
             var overflow: WKBoolean = WK_FALSE
@@ -321,6 +322,7 @@ public final class Wallet: Equatable {
                 return nil
             }
             
+            gotResponse = false
             self.system.client.getUnsignedTokenized(threadId: threadId) {
                 (res: Result<SystemClient.UnSigTokenizedTx, SystemClientError>) in
                       res.resolve(success: { (uTx) in
